@@ -48,47 +48,21 @@ var service2 = new Service
 //await service2.AddServiceAsync(service2);
 
 
-
-
 var appointment1 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, service1, user1);
 
 List<Appointment> appointments = new List<Appointment>() { appointment1 };
 
 List<DateTime> busyTime = new List<DateTime>();
-busyTime = GetBusyTime(appointments);
-
+busyTime=appointment1.BusyTime;
 
 //добавление записи
 var appointment2 = new Appointment(new DateTime(2024, 9, 23, 16, 0, 0), master, service2, user2);
-var appTime = new List<DateTime>();
-for (var t = appointment2.DateTime; t < appointment2.DateTime + appointment2.Duration; t += master.DayInterval)
-{
-    appTime.Add(t);
-}
-bool timeOccupied = false;
-for (var i = 0; i < appTime.Count; i++)
-{
-    timeOccupied = busyTime.Contains(appTime[i]);
-    if (timeOccupied)
-    {
-        Console.WriteLine("interval is incorrect");
-        break;
-    }
-
-}
-if (timeOccupied == false)
-{
-    appointments.Add(appointment2);
-    //запись в базу данных
-    Console.WriteLine("Appointment is Create");
-}
-
-busyTime = GetBusyTime(appointments);
+appointment2.CreateAppointment(appointment2,appointments,busyTime);
 
 //добавление 3й записи
 var appointment3 = new Appointment(new DateTime(2024, 9, 23, 13, 0, 0), master, service1, user1);
-appointments = CreateAppointment(appointment3, busyTime);
-busyTime = GetBusyTime(appointments);
+appointment3.CreateAppointment(appointment3, appointments, busyTime); 
+
 
 // вывод для user
 DateTime startTime = new DateTime(2024, 9, 23, 9, 0, 0);
@@ -115,19 +89,6 @@ Console.WriteLine("finish.");
 Console.ReadKey();
 
 
-List<DateTime> GetBusyTime(List<Appointment> appointments)
-{
-    List<DateTime> busyTime = new List<DateTime>();
-    TimeSpan dayInterval = master.DayInterval;
-    foreach (Appointment app in appointments)
-    {
-        for (var i = app.DateTime; i < app.DateTime + app.Duration; i += dayInterval)
-        {
-            busyTime.Add(i);
-        }
-    }
-    return busyTime;
-}
 void CanselAppointment(Appointment appointment, IEnumerable<DaySchedule> daySchedule)
 {
     var canselIntervals = daySchedule.Where(i => i.Busy == true && i.AppointmentId == appointment.Id);
@@ -139,31 +100,4 @@ void CanselAppointment(Appointment appointment, IEnumerable<DaySchedule> daySche
             i.AppointmentId = null;
         }
     }
-}
-List<Appointment> CreateAppointment(Appointment appointment, List<DateTime> busyTime)
-{
-
-    var appTime = new List<DateTime>();
-    for (var t = appointment.DateTime; t < appointment.DateTime + appointment.Duration; t += master.DayInterval)
-    {
-        appTime.Add(t);
-    }
-    bool timeOccupied = false;
-    for (var i = 0; i < appTime.Count; i++)
-    {
-        timeOccupied = busyTime.Contains(appTime[i]);
-        if (timeOccupied)
-        {
-            Console.WriteLine("interval is incorrect");
-            break;
-        }
-
-    }
-    if (timeOccupied == false)
-    {
-        appointments.Add(appointment);
-        //запись в базу данных
-        Console.WriteLine("Appointment is Create");
-    }
-    return appointments;
 }
