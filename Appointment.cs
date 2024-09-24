@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConsoleSchedule.models;
 
 namespace DbCreation
 {
@@ -57,13 +58,7 @@ namespace DbCreation
             }
 
         }
-        public void Show(List<Appointment> appointments)
-        {
-            foreach (var i in appointments)
-            {
-                Console.WriteLine($"{i.DateTime}\t{i.MasterId}\t{i.ServiceId}\t{i.Duration}\t{i.UserId}\t{i.Cancellation}");
-            }
-        }
+
 
         private List<DateTime> GetBusyTime(Master master)
         {

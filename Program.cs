@@ -3,6 +3,7 @@ using DbCreation;
 using Npgsql;
 using System.Collections.Generic;
 using System.Diagnostics;
+using ConsoleSchedule.models;
 
 Console.WriteLine("Start program...");
 
@@ -24,13 +25,16 @@ var user2 = new User
 //await user2.AddUserAsync(user2);
 
 
-var master = new Master
+var repository = new MasterRepository("Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata");
+/*
 {
     Name = "test-Master1",
     DayInterval = new TimeSpan(0, 30, 0)
 };
-//await master.AddMasterAsync(master);
+*/
+//await Master.AddMasterAsync(Master);
 
+ Master master = await repository.GetMasterById(1);
 
 var service1 = new Service
 {
@@ -53,15 +57,15 @@ var appointment1 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, s
 List<Appointment> appointments = new List<Appointment>() { appointment1 };
 
 List<DateTime> busyTime = new List<DateTime>();
-busyTime=appointment1.BusyTime;
+busyTime = appointment1.BusyTime;
 
-//добавление записи
+//добавление 2 записи
 var appointment2 = new Appointment(new DateTime(2024, 9, 23, 16, 0, 0), master, service2, user2);
-appointment2.CreateAppointment(appointment2,appointments,busyTime);
+appointment2.CreateAppointment(appointment2, appointments, busyTime);
 
 //добавление 3й записи
 var appointment3 = new Appointment(new DateTime(2024, 9, 23, 13, 0, 0), master, service1, user1);
-appointment3.CreateAppointment(appointment3, appointments, busyTime); 
+appointment3.CreateAppointment(appointment3, appointments, busyTime);
 
 
 // вывод для user
@@ -82,8 +86,12 @@ for (DateTime i = startTime; i < finishTime; i += interval)
     Console.WriteLine($"{i}\t{status}");
 }
 
-//Вывод для master
-appointment1.Show(appointments);
+//Вывод для Master
+foreach (var i in appointments)
+{
+    Console.WriteLine($"{i.DateTime}\t{i.MasterId}\t{i.ServiceId}\t{i.Duration}\t{i.UserId}\t{i.Cancellation}");
+}
+
 
 Console.WriteLine("finish.");
 Console.ReadKey();
