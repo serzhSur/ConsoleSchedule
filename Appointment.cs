@@ -63,7 +63,7 @@ namespace DbCreation
         private List<DateTime> GetBusyTime(Master master)
         {
             List<DateTime> busyTime = new List<DateTime>();
-            TimeSpan dayInterval = master.DayInterval;
+            TimeSpan dayInterval = master.Day_interval;
 
             for (var i = DateTime; i < DateTime + Duration; i += dayInterval)
             {

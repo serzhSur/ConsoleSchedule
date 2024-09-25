@@ -10,7 +10,7 @@ namespace ConsoleSchedule.models
     {
         public int Id { get; set; }
         public string Name { get; set; } = "undefined";
-        public string Specialty { get; set; }
-        public TimeSpan DayInterval { get; set; }
+        public string Speciality { get; set; }
+        public TimeSpan Day_interval { get; set; }
     }
 }

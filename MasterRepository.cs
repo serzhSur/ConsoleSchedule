@@ -14,19 +14,18 @@ namespace DbCreation
     internal class MasterRepository
     {
        
-        private string connString = $"Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
+        private string connString;
 
         public MasterRepository(string connString) 
         { 
             this.connString = connString ;
         }
-        public async Task AddMasterAsync(MasterRepository master)
+        public async Task AddMasterAsync(Master master)
         {
-            string connString = $"Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
             using (var con = new NpgsqlConnection(connString))
             {
-                var query = @"INSERT INTO masters (name) 
-                              VALUES (@Name)";
+                var query = @"INSERT INTO masters (name, day_interval, speciality) 
+                              VALUES (@Name, @Day_interval, @Speciality)";
                 try
                 {
                     await con.OpenAsync();
@@ -34,7 +33,7 @@ namespace DbCreation
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERROR: Task AddMasterAsync - " + ex.Message);
+                    Console.WriteLine("ERROR: MasterRepository, AddMasterAsync - " + ex.Message);
                 }
             }
         }
@@ -42,17 +41,22 @@ namespace DbCreation
         {
             using (var con = new NpgsqlConnection(connString)) 
             {
-              
-                string query = "SELECT * FROM masters WHERE id = @Id";
+                
                 try 
                 {
+                    string query = "SELECT * FROM masters WHERE id = @Id";
                     await con.OpenAsync();
-                    return await con.QueryFirstOrDefaultAsync<Master>(query, new { Id = id});
+                     var master = await con.QueryFirstOrDefaultAsync<Master>(query, new { Id = id});
+                    if (master == null)
+                    {
+                        throw new KeyNotFoundException($"master id {id} not founf");
+                    }
+                    return master;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERROR: class Master"+ex.Message);
-                    return null;
+                    Console.WriteLine("ERROR Master, GetMasterById: " + ex.Message);
+                    throw;
                 }
             }
                 

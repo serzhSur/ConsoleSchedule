@@ -64,7 +64,9 @@ phone_number VARCHAR(15) NOT NULL
 
                 string createTableQ = @"CREATE TABLE IF NOT EXISTS masters (
 id SERIAL PRIMARY KEY,
-name VARCHAR(30) NOT NULL
+name VARCHAR(30) NOT NULL,
+day_interval INTERVAL NOT NULL,
+speciality VARCHAR(30)
 )";
                 try
                 {
@@ -78,7 +80,7 @@ name VARCHAR(30) NOT NULL
                 createTableQ = @"CREATE TABLE IF NOT EXISTS services (
 id SERIAL PRIMARY KEY,
 name VARCHAR(50) NOT NULL,
-duration INTERVAL NOT NULL,
+duration INTERVAL DEFAULT '30 minutes',
 master_id INTEGER,
 FOREIGN KEY (master_id) REFERENCES masters (id) ON DELETE CASCADE
 )";
