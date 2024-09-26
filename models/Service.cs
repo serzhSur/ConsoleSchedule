@@ -1,11 +1,11 @@
 ﻿
-
 namespace ConsoleSchedule.models
 {
-    public class User
+    internal class Service
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string PhoneNumber { get; set; }
+        public TimeSpan Duration { get; set; }
+        public int Master_id { get; set; }
     }
 }

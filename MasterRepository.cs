@@ -1,11 +1,5 @@
 ﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dapper;
-using System.Collections;
 using ConsoleSchedule.models;
 
 
@@ -41,15 +35,14 @@ namespace DbCreation
         {
             using (var con = new NpgsqlConnection(connString)) 
             {
-                
                 try 
                 {
                     string query = "SELECT * FROM masters WHERE id = @Id";
                     await con.OpenAsync();
-                     var master = await con.QueryFirstOrDefaultAsync<Master>(query, new { Id = id});
+                    var master = await con.QueryFirstOrDefaultAsync<Master>(query, new { Id = id});
                     if (master == null)
                     {
-                        throw new KeyNotFoundException($"master id {id} not founf");
+                        throw new KeyNotFoundException($"master id-{id} not founf");
                     }
                     return master;
                 }
@@ -58,8 +51,7 @@ namespace DbCreation
                     Console.WriteLine("ERROR Master, GetMasterById: " + ex.Message);
                     throw;
                 }
-            }
-                
+            }    
         }
 
     }

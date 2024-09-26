@@ -1,10 +1,7 @@
 ﻿using ConsoleSchedule.models;
 using Npgsql;
 using Dapper;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ConsoleSchedule
 {
@@ -50,7 +47,7 @@ namespace ConsoleSchedule
                     var user = await con.QueryFirstOrDefaultAsync<User>(query, new { Id = id });
                     if (user == null) 
                     {
-                        throw new KeyNotFoundException($"User id {id} not found");
+                        throw new KeyNotFoundException($"User id-{id} not found");
                     }
                     return user;
                 }

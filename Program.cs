@@ -18,26 +18,16 @@ try
     User user2 = await userRepository.GetUserById(2);
     User user17 = await userRepository.GetUserById(17);
 
-    var repository = new MasterRepository(connectionString);
-    Master master = await repository.GetMasterById(1);
+    var masterRepository = new MasterRepository(connectionString);
+    Master master = await masterRepository.GetMasterById(1);
 
-    var service1 = new Service
-    {
-        Name = "test-Массаж верх1",
-        Duration = new TimeSpan(1, 0, 0),
-        Master_id = 1
-    };
-    var service2 = new Service
-    {
-        Name = "test-Массаж Полностью2",
-        Duration = new TimeSpan(2, 0, 0),
-        Master_id = 1
-    };
-    //await service1.AddServiceAsync(service1);
-    //await service2.AddServiceAsync(service2);
+    var serviceRepository = new ServiceRepository(connectionString);
+    var masterId = master.Id;
+    List<Service> services = await serviceRepository.GetMasterServices(masterId);
 
 
-    var appointment1 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, service1, user1);
+
+    var appointment1 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, services[0], user1);
 
     List<Appointment> appointments = new List<Appointment>() { appointment1 };
 
@@ -45,11 +35,11 @@ try
     busyTime = appointment1.BusyTime;
 
     //добавление 2 записи
-    var appointment2 = new Appointment(new DateTime(2024, 9, 23, 16, 0, 0), master, service2, user2);
+    var appointment2 = new Appointment(new DateTime(2024, 9, 23, 16, 0, 0), master, services[1], user2);
     appointment2.CreateAppointment(appointment2, appointments, busyTime);
 
     //добавление 3й записи
-    var appointment3 = new Appointment(new DateTime(2024, 9, 23, 13, 0, 0), master, service1, user17);
+    var appointment3 = new Appointment(new DateTime(2024, 9, 23, 13, 0, 0), master, services[2], user17);
     appointment3.CreateAppointment(appointment3, appointments, busyTime);
 
 
@@ -58,6 +48,14 @@ try
     DateTime finishTime = new DateTime(2024, 9, 23, 19, 0, 0);
     TimeSpan interval = master.Day_interval;
 
+    Console.WriteLine($"Master: {master.Name}");
+    Console.WriteLine("Services: ");
+    int numb = 0;   
+    foreach (var s in services) 
+    {
+        Console.WriteLine($"namber: {numb}\tservice: {s.Name}\tduration: {s.Duration}\tprice: 00");
+        numb++;
+    }
     for (DateTime i = startTime; i < finishTime; i += interval)
     {
         bool status = false;
