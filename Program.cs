@@ -6,6 +6,7 @@ using System.Diagnostics;
 using ConsoleSchedule.models;
 using ConsoleSchedule;
 
+
 Console.WriteLine("Start program...");
 string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
 try 
@@ -26,27 +27,41 @@ try
     List<Service> services = await serviceRepository.GetMasterServices(masterId);
 
 
-
-    var appointment1 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, services[0], user1);
-
-    List<Appointment> appointments = new List<Appointment>() { appointment1 };
-
-    List<DateTime> busyTime = new List<DateTime>();
-    busyTime = appointment1.BusyTime;
-
-    //добавление 2 записи
-    var appointment2 = new Appointment(new DateTime(2024, 9, 23, 16, 0, 0), master, services[1], user2);
-    appointment2.CreateAppointment(appointment2, appointments, busyTime);
-
-    //добавление 3й записи
-    var appointment3 = new Appointment(new DateTime(2024, 9, 23, 13, 0, 0), master, services[2], user17);
-    appointment3.CreateAppointment(appointment3, appointments, busyTime);
+    var appointmentRepository = new AppointmentRepository(connectionString);
+    var appointment4 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, services[0], user17);
+    await appointmentRepository.MakeAppointment(appointment4);
 
 
-    // вывод для user
+     /*
+     busyTime = appointment1.BusyTime;
+
+     //добавление 2 записи
+     var appointment2 = new Appointment(new Date(2024, 9, 23, 16, 0, 0), master, services[1], user2);
+     //appointmentRepository.InsertAppointment(appointment2);
+     appointment2.CreateAppointment(appointment2, appointments, busyTime);
+
+     //добавление 3й записи
+     var appointment3 = new Appointment(new Date(2024, 9, 23, 13, 0, 0), master, services[2], user17);
+     //appointmentRepository.InsertAppointment(appointment3);
+     appointment3.CreateAppointment(appointment3, appointments, busyTime);
+     */
+
+     // вывод для user
     DateTime startTime = new DateTime(2024, 9, 23, 9, 0, 0);
     DateTime finishTime = new DateTime(2024, 9, 23, 19, 0, 0);
     TimeSpan interval = master.Day_interval;
+
+    List<Appointment> appointments = await appointmentRepository.GetAllAppointments();
+
+    List<DateTime> busyTime = new List<DateTime>();
+    TimeSpan dayInterval = master.Day_interval;
+    foreach (var a in appointments)
+    {
+        for (var i = a.Date; i < a.Date + a.Duration; i += dayInterval)
+        {
+            busyTime.Add(i);
+        }
+    }
 
     Console.WriteLine($"Master: {master.Name}");
     Console.WriteLine("Services: ");
@@ -56,6 +71,7 @@ try
         Console.WriteLine($"namber: {numb}\tservice: {s.Name}\tduration: {s.Duration}\tprice: 00");
         numb++;
     }
+
     for (DateTime i = startTime; i < finishTime; i += interval)
     {
         bool status = false;
@@ -72,7 +88,7 @@ try
     //Вывод для Master
     foreach (var i in appointments)
     {
-        Console.WriteLine($"{i.DateTime}\t{i.MasterId}\t{i.ServiceId}\t{i.Duration}\t{i.UserId}\t{i.Cancellation}");
+        Console.WriteLine($"{i.Date}\t{i.Master_id}\t{i.Service_id}\t{i.Duration}\t{i.User_id}\t{i.Cancellation}");
     }
 
 }

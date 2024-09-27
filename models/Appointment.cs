@@ -6,58 +6,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ConsoleSchedule.models;
+using System.Diagnostics.Metrics;
 
-namespace DbCreation
+namespace ConsoleSchedule
 {
     internal class Appointment
     {
         public int Id { get; set; }
-        public DateTime DateTime { get; set; }
-        public int MasterId { get; set; }
-        public int ServiceId { get; set; }
+        public DateTime Date { get; set; }
+        public int Master_id { get; set; }
+        public int Service_id { get; set; }
         public TimeSpan Duration { get; set; }
-        public int UserId { get; set; }
+        public int User_id { get; set; }
         public bool Cancellation { get; set; } = false;
-        public List<DateTime> BusyTime { get; }
+        public List<DateTime> BusyTime { get; }//кастыль
+        public TimeSpan DayInterval { get; set; }
 
-        private string connString = $"Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
+
+
         public Appointment() { }
         public Appointment(DateTime dateTime, Master master, Service service, User user)
         {
-            DateTime = dateTime;
+            Date = dateTime;
             Duration = service.Duration;
-            MasterId = master.Id;
-            ServiceId = service.Id;
-            UserId = user.Id;
+            Master_id = master.Id;
+            Service_id = service.Id;
+            User_id = user.Id;
             BusyTime = new List<DateTime>(GetBusyTime(master));
-        }
-
-        public async Task InserAppointment(DateTime dateTime, Master master, Service service, User user)
-        {
-            var appointment = new Appointment()
-            {
-                DateTime = dateTime,
-                Duration = service.Duration,
-                MasterId = master.Id,
-                ServiceId = service.Id,
-                UserId = user.Id,
-            };
-            using (var con = new NpgsqlConnection(connString))
-            {
-                await con.OpenAsync();
-                string query = @"INSERT INTO appointments (date, duration, master_id, service_id, user_id, cancellation) VALUES
-(@DateTime, @Duration, @MasterId, @ServiceId, @UserId, @Cancellation)";
-                try
-                {
-                    await con.ExecuteAsync(query, appointment);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("ERROR: InserAppointment - " + ex.Message);
-                }
-            }
+            DayInterval = master.Day_interval;
 
         }
+
+
 
 
         private List<DateTime> GetBusyTime(Master master)
@@ -65,7 +45,7 @@ namespace DbCreation
             List<DateTime> busyTime = new List<DateTime>();
             TimeSpan dayInterval = master.Day_interval;
 
-            for (var i = DateTime; i < DateTime + Duration; i += dayInterval)
+            for (var i = Date; i < Date + Duration; i += dayInterval)
             {
                 busyTime.Add(i);
             }
@@ -90,8 +70,9 @@ namespace DbCreation
                 busyDayTime.AddRange(appointment.BusyTime);
                 //запись в базу данных
                 Console.WriteLine("Appointment is Create");
-            } 
+            }
         }
+        
 
     }
 

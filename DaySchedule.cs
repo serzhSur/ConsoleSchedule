@@ -40,7 +40,7 @@ namespace DbCreation
             {
                 await con.OpenAsync();
                 var query = @"INSERT INTO dayschedules (date, interval, busy, master_id, appointment_id) 
-VALUES (@Date, @Interval, @Busy, @MasterId, @AppointmentId)";
+VALUES (@Date, @Interval, @Busy, @Master_id, @AppointmentId)";
                 foreach (var interval in daySchedule)
                 {
                     try

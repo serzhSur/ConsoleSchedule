@@ -2,7 +2,7 @@
 using Npgsql;
 
 
-namespace DbCreation
+namespace ConsoleSchedule
 {
     internal class DabasePostgreSQL
     {
