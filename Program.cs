@@ -28,25 +28,15 @@ try
 
 
     var appointmentRepository = new AppointmentRepository(connectionString);
-    var appointment4 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, services[0], user17);
-    await appointmentRepository.MakeAppointment(appointment4);
+    //var appointment4 = new Appointment(new DateTime(2024, 9, 23, 10, 15, 0), master, services[0], user17);
+    //await appointmentRepository.MakeAppointment(appointment4);
+    //await appointmentRepository.DeleteAppointmentByDate(appointment4);
+
+    var appointment5 = new Appointment(new DateTime(2024, 9, 23, 10, 30, 0), master, services[0], user17);
+    await appointmentRepository.MakeAppointment2(appointment5);
 
 
-     /*
-     busyTime = appointment1.BusyTime;
-
-     //добавление 2 записи
-     var appointment2 = new Appointment(new Date(2024, 9, 23, 16, 0, 0), master, services[1], user2);
-     //appointmentRepository.InsertAppointment(appointment2);
-     appointment2.CreateAppointment(appointment2, appointments, busyTime);
-
-     //добавление 3й записи
-     var appointment3 = new Appointment(new Date(2024, 9, 23, 13, 0, 0), master, services[2], user17);
-     //appointmentRepository.InsertAppointment(appointment3);
-     appointment3.CreateAppointment(appointment3, appointments, busyTime);
-     */
-
-     // вывод для user
+    // вывод для user
     DateTime startTime = new DateTime(2024, 9, 23, 9, 0, 0);
     DateTime finishTime = new DateTime(2024, 9, 23, 19, 0, 0);
     TimeSpan interval = master.Day_interval;
@@ -86,10 +76,42 @@ try
     }
 
     //Вывод для Master
-    foreach (var i in appointments)
+    Console.WriteLine("{a.Id}\t{a.Date}\t{a.Master_id}\t{a.Service_id}\t{a.Duration}\t{a.User_id}\t{a.Cancellation}");
+    foreach (var a in appointments)
     {
-        Console.WriteLine($"{i.Date}\t{i.Master_id}\t{i.Service_id}\t{i.Duration}\t{i.User_id}\t{i.Cancellation}");
+        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.Master_id}\t{a.Service_id}\t{a.Duration}\t{a.User_id}\t{a.Cancellation}");
     }
+    // вывод2 для user
+    var startDayTime = new TimeSpan(9, 0, 0);
+    var endDayTime = new TimeSpan(19, 0, 0);
+    var intervalDay = new TimeSpan(0, 30, 0);
+    List<(TimeSpan start, TimeSpan end)>schedule = new List<(TimeSpan, TimeSpan)>();
+    for (var i=startDayTime; i < endDayTime; i += intervalDay) 
+    {
+        schedule.Add((i, i + interval));
+        
+    }
+
+    List<(TimeSpan start, TimeSpan end, string status)> occupitedTime = new List<(TimeSpan, TimeSpan,string)> 
+    { 
+        (new TimeSpan(10,0,0), new TimeSpan(11,0,0), "reserved")
+    };
+    
+    
+    foreach (var t in schedule) 
+    {
+        if ((t.start < occupitedTime[0].start && t.end <= occupitedTime[0].start)||(t.start >= occupitedTime[0].end))// && t.start > occupitedTime[0].end))
+        {
+            occupitedTime.Add((t.start, t.end,"free"));
+        }
+    }
+    var sortedDaySchedule = occupitedTime.OrderBy(item=>item.start).ToList();
+    foreach (var i in sortedDaySchedule) 
+    {
+        Console.WriteLine($"{i.start}--{i.end}\t{i.status}");
+    }
+
+
 
 }
 catch (Exception ex) 
@@ -107,15 +129,4 @@ finally
 
 
 
-void CanselAppointment(Appointment appointment, IEnumerable<DaySchedule> daySchedule)
-{
-    var canselIntervals = daySchedule.Where(i => i.Busy == true && i.AppointmentId == appointment.Id);
-    if (canselIntervals != null)
-    {
-        foreach (var i in canselIntervals)
-        {
-            i.Busy = false;
-            i.AppointmentId = null;
-        }
-    }
-}
+

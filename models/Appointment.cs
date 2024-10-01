@@ -1,12 +1,5 @@
-﻿using Dapper;
-using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ConsoleSchedule.models;
-using System.Diagnostics.Metrics;
+﻿using ConsoleSchedule.models;
+
 
 namespace ConsoleSchedule
 {
@@ -19,10 +12,8 @@ namespace ConsoleSchedule
         public TimeSpan Duration { get; set; }
         public int User_id { get; set; }
         public bool Cancellation { get; set; } = false;
-        public List<DateTime> BusyTime { get; }//кастыль
         public TimeSpan DayInterval { get; set; }
-
-
+        public DateTime EndTime {  get; set; }
 
         public Appointment() { }
         public Appointment(DateTime dateTime, Master master, Service service, User user)
@@ -32,13 +23,9 @@ namespace ConsoleSchedule
             Master_id = master.Id;
             Service_id = service.Id;
             User_id = user.Id;
-            BusyTime = new List<DateTime>(GetBusyTime(master));
             DayInterval = master.Day_interval;
-
+            EndTime = dateTime +Duration;
         }
-
-
-
 
         private List<DateTime> GetBusyTime(Master master)
         {
@@ -53,27 +40,5 @@ namespace ConsoleSchedule
         }
 
 
-        public void CreateAppointment(Appointment appointment, List<Appointment> appointments, List<DateTime> busyDayTime)
-        {
-            bool timeOccupied = false;
-            foreach (var time in appointment.BusyTime)
-            {
-                if (busyDayTime.Contains(time))
-                {
-                    Console.WriteLine("interval is incorrect");
-                    break;
-                }
-            }
-            if (timeOccupied == false)
-            {
-                appointments.Add(appointment);
-                busyDayTime.AddRange(appointment.BusyTime);
-                //запись в базу данных
-                Console.WriteLine("Appointment is Create");
-            }
-        }
-        
-
     }
-
 }

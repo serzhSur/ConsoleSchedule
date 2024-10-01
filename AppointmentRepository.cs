@@ -1,6 +1,8 @@
 ﻿using ConsoleSchedule.models;
 using Npgsql;
 using Dapper;
+using System.Numerics;
+using System;
 
 namespace ConsoleSchedule
 {
@@ -17,7 +19,6 @@ namespace ConsoleSchedule
             using (var con = new NpgsqlConnection(_connectionString))
             {
                 string query = @"INSERT INTO appointments (date, duration, master_id, service_id, user_id, cancellation) 
-                    await con.OpenAsync();
 VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
                 try
                 {
@@ -49,6 +50,7 @@ VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
             }
         }
 
+
         public async Task MakeAppointment(Appointment appointment)//, AppointmentRepository repository)
         {
             List<Appointment> appointments = await GetAllAppointments();
@@ -74,18 +76,109 @@ VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
                 timeIsBusy = busyTime.Contains(t);
                 if (timeIsBusy == true)
                 {
-                    Console.WriteLine("Time interval is busy");
+                    Console.WriteLine($"Appointment {appointment.Date} can't be made: Time interval is busy ");
                     break;
                 }
             }
             if (timeIsBusy == false)
             {
                 await InsertAppointment(appointment);
-                //busyTime.AddRange(plannedTime);
-                //appointments.Add(appointment);
-                Console.WriteLine($"Appointment id: {appointment.Id} is Created");
+                Console.WriteLine($"Appointment Date: {appointment.Date} is Created");
             }
         }
 
+        public async Task DeleteAppointmentByDate(Appointment appointment)
+        {
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                DateTime date = appointment.Date;
+                int id = appointment.Master_id;
+                string query = @"DELETE FROM appointments WHERE date = @Date AND master_id = @Id";
+                try
+                {
+                    con.Open();
+                    await con.ExecuteAsync(query, new { Date = date, Id = id });
+                    Console.WriteLine($"Appointment date-{appointment.Date} Deleted");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ERROR class AppointmentRepository, DeleteAppointment " + ex.Message);
+                }
+            }
+        }
+
+        public bool CanBookAppointment(DateTime appointmentTime)
+        {
+            // Определяем границы интервала
+            DateTime startTime = new DateTime(appointmentTime.Year, appointmentTime.Month, appointmentTime.Day, 10, 15, 0);
+            DateTime endTime = new DateTime(appointmentTime.Year, appointmentTime.Month, appointmentTime.Day, 10, 45, 0);
+
+            // Проверяем, попадает ли время записи в запрещенный интервал
+            if (appointmentTime >= startTime && appointmentTime <= endTime)
+            {
+                return false; // Запись запрещена
+            }
+
+            return true; // Запись разрешена
+        }
+
+        public async Task MakeAppointment2(Appointment appointment)
+        {
+            List<Appointment> appointments = await GetAllAppointments();
+            foreach (var a in appointments)
+            {
+                a.EndTime = a.Date + a.Duration;
+            }
+
+
+            List<(TimeSpan start, TimeSpan end)> busyTime = new List<(TimeSpan, TimeSpan)>();
+            foreach (var a in appointments)
+            {
+                busyTime.Add((a.Date.TimeOfDay, a.EndTime.TimeOfDay));
+            }
+
+            var newTimeStart = appointment.Date.TimeOfDay;
+            var newTimeEnd = appointment.EndTime.TimeOfDay;
+            
+            bool timeOccupied = false;
+            foreach (var t in busyTime)
+            {
+                if ((newTimeStart > t.start && newTimeStart > t.end) || (newTimeStart < t.start && newTimeEnd <= t.start))
+                {
+                    //timeOccupied = false;
+                }
+                else
+                {
+                    timeOccupied = true;//time is buisy
+                    break;
+                }
+            }
+
+            if (timeOccupied)
+            {
+                Console.WriteLine($"Appointment {appointment.Date} can't be made: Time interval is busy ");
+            }
+            else 
+            {
+                await InsertAppointment(appointment);
+                Console.WriteLine($"Appointment Date: {appointment.Date} is Created");
+            }
+        }
+        public async Task<List<(TimeSpan start, TimeSpan end)>> CreateBusyTime()
+        {
+            List<Appointment> appointments = await GetAllAppointments();
+            foreach (var a in appointments)
+            {
+                a.EndTime = a.Date + a.Duration;
+            }
+
+
+            List<(TimeSpan start, TimeSpan end)> busyTime = new List<(TimeSpan, TimeSpan)>();
+            foreach (var a in appointments)
+            {
+                busyTime.Add((a.Date.TimeOfDay, a.EndTime.TimeOfDay));
+            }
+            return busyTime;
+        }
     }
 }
