@@ -62,18 +62,6 @@ try
         numb++;
     }
 
-    for (DateTime i = startTime; i < finishTime; i += interval)
-    {
-        bool status = false;
-        foreach (var t in busyTime) //listBusyTime)
-        {
-            if (i == t)
-            {
-                status = true;
-            }
-        }
-        Console.WriteLine($"{i}\t{status}");
-    }
 
     //Вывод для Master
     Console.WriteLine("{a.Id}\t{a.Date}\t{a.Master_id}\t{a.Service_id}\t{a.Duration}\t{a.User_id}\t{a.Cancellation}");
@@ -82,31 +70,29 @@ try
         Console.WriteLine($"{a.Id}\t{a.Date}\t{a.Master_id}\t{a.Service_id}\t{a.Duration}\t{a.User_id}\t{a.Cancellation}");
     }
     // вывод2 для user
-    var startDayTime = new TimeSpan(9, 0, 0);
-    var endDayTime = new TimeSpan(19, 0, 0);
+    var startDayTime = new TimeSpan(9,0, 0);
+    var endDayTime = new TimeSpan(13, 00, 0);
     var intervalDay = new TimeSpan(0, 30, 0);
-    List<(TimeSpan start, TimeSpan end)>schedule = new List<(TimeSpan, TimeSpan)>();
+    List<(TimeSpan start, TimeSpan end, string status)>schedule = new List<(TimeSpan, TimeSpan, string)>();
     for (var i=startDayTime; i < endDayTime; i += intervalDay) 
     {
-        schedule.Add((i, i + interval));
-        
+        schedule.Add((i, i + interval, "free"));
     }
 
     List<(TimeSpan start, TimeSpan end, string status)> occupitedTime = new List<(TimeSpan, TimeSpan,string)> 
     { 
-        (new TimeSpan(10,0,0), new TimeSpan(11,0,0), "reserved")
+        (new TimeSpan(9,0,0), new TimeSpan(10,0,0), "reserved"),
+        (new TimeSpan(12,0,0), new TimeSpan(12,30,0), "reserved"),
+        (new TimeSpan(10,15,0), new TimeSpan(10,45,0), "reserved")
     };
-    
-    
-    foreach (var t in schedule) 
-    {
-        if ((t.start < occupitedTime[0].start && t.end <= occupitedTime[0].start)||(t.start >= occupitedTime[0].end))// && t.start > occupitedTime[0].end))
-        {
-            occupitedTime.Add((t.start, t.end,"free"));
-        }
-    }
-    var sortedDaySchedule = occupitedTime.OrderBy(item=>item.start).ToList();
-    foreach (var i in sortedDaySchedule) 
+
+    schedule = schedule.Where(s =>
+            !occupitedTime.Any(o =>
+                s.start < o.end && s.end > o.start)).ToList();
+
+    schedule.AddRange(occupitedTime);
+    schedule.Sort((x, y) => x.start.CompareTo(y.start));
+    foreach (var i in schedule) 
     {
         Console.WriteLine($"{i.start}--{i.end}\t{i.status}");
     }
