@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ConsoleSchedule.models;
 using ConsoleSchedule;
+using ConsoleSchedule.Services;
+using ConsoleSchedule.Repositories;
 
 
 Console.WriteLine("Start program...");
@@ -34,24 +36,14 @@ try
 
     var appointment5 = new Appointment(new DateTime(2024, 9, 23, 10, 30, 0), master, services[0], user17);
     await appointmentRepository.MakeAppointment2(appointment5);
+    var appointmentService = new AppointmentService(appointmentRepository);
 
 
-    // вывод для user
-    DateTime startTime = new DateTime(2024, 9, 23, 9, 0, 0);
-    DateTime finishTime = new DateTime(2024, 9, 23, 19, 0, 0);
-    TimeSpan interval = master.Day_interval;
+
 
     List<Appointment> appointments = await appointmentRepository.GetAllAppointments();
 
-    List<DateTime> busyTime = new List<DateTime>();
-    TimeSpan dayInterval = master.Day_interval;
-    foreach (var a in appointments)
-    {
-        for (var i = a.Date; i < a.Date + a.Duration; i += dayInterval)
-        {
-            busyTime.Add(i);
-        }
-    }
+
 
     Console.WriteLine($"Master: {master.Name}");
     Console.WriteLine("Services: ");
@@ -69,23 +61,24 @@ try
     {
         Console.WriteLine($"{a.Id}\t{a.Date}\t{a.Master_id}\t{a.Service_id}\t{a.Duration}\t{a.User_id}\t{a.Cancellation}");
     }
-    // вывод2 для user
+    // вывод для user
     var startDayTime = new TimeSpan(9,0, 0);
-    var endDayTime = new TimeSpan(13, 00, 0);
+    var endDayTime = new TimeSpan(19, 00, 0);
     var intervalDay = new TimeSpan(0, 30, 0);
     List<(TimeSpan start, TimeSpan end, string status)>schedule = new List<(TimeSpan, TimeSpan, string)>();
     for (var i=startDayTime; i < endDayTime; i += intervalDay) 
     {
-        schedule.Add((i, i + interval, "free"));
+        schedule.Add((i, i + intervalDay, "free"));
     }
-
+    /*
     List<(TimeSpan start, TimeSpan end, string status)> occupitedTime = new List<(TimeSpan, TimeSpan,string)> 
     { 
         (new TimeSpan(9,0,0), new TimeSpan(10,0,0), "reserved"),
         (new TimeSpan(12,0,0), new TimeSpan(12,30,0), "reserved"),
         (new TimeSpan(10,15,0), new TimeSpan(10,45,0), "reserved")
     };
-
+    */
+    var occupitedTime = await appointmentService.GetBusyTime();
     schedule = schedule.Where(s =>
             !occupitedTime.Any(o =>
                 s.start < o.end && s.end > o.start)).ToList();

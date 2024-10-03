@@ -4,7 +4,7 @@ using Dapper;
 using System.Numerics;
 using System;
 
-namespace ConsoleSchedule
+namespace ConsoleSchedule.Repositories
 {
     internal class AppointmentRepository
     {
@@ -139,11 +139,11 @@ VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
 
             var newTimeStart = appointment.Date.TimeOfDay;
             var newTimeEnd = appointment.EndTime.TimeOfDay;
-            
+
             bool timeOccupied = false;
             foreach (var t in busyTime)
             {
-                if ((newTimeStart > t.start && newTimeStart > t.end) || (newTimeStart < t.start && newTimeEnd <= t.start))
+                if (newTimeStart > t.start && newTimeStart > t.end || newTimeStart < t.start && newTimeEnd <= t.start)
                 {
                     //timeOccupied = false;
                 }
@@ -158,7 +158,7 @@ VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
             {
                 Console.WriteLine($"Appointment {appointment.Date} can't be made: Time interval is busy ");
             }
-            else 
+            else
             {
                 await InsertAppointment(appointment);
                 Console.WriteLine($"Appointment Date: {appointment.Date} is Created");
