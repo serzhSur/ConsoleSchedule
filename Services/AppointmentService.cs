@@ -19,6 +19,7 @@ namespace ConsoleSchedule.Services
         public async Task <List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime()
         {
             List<Appointment> appointments = await _repository.GetAllAppointments();
+            
             List<(TimeSpan start, TimeSpan end, string status)> busyTime =
                 appointments.Select(a =>
                 {

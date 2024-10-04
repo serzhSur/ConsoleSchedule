@@ -7,9 +7,9 @@ namespace ConsoleSchedule
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
+        public TimeSpan Duration { get; set; }
         public int Master_id { get; set; }
         public int Service_id { get; set; }
-        public TimeSpan Duration { get; set; }
         public int User_id { get; set; }
         public bool Cancellation { get; set; } = false;
         public TimeSpan DayInterval { get; set; }

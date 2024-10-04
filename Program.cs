@@ -41,7 +41,7 @@ try
 
 
 
-    List<Appointment> appointments = await appointmentRepository.GetAllAppointments();
+    
 
 
 
@@ -56,10 +56,13 @@ try
 
 
     //Вывод для Master
-    Console.WriteLine("{a.Id}\t{a.Date}\t{a.Master_id}\t{a.Service_id}\t{a.Duration}\t{a.User_id}\t{a.Cancellation}");
-    foreach (var a in appointments)
+    Console.WriteLine("View for Master");
+    
+    var db = new AppointmentDetailsRepository(connectionString);
+    var appointmentDetails = new List<AppointmentDetails>(db.GetAll());
+    foreach (var a in appointmentDetails)
     {
-        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.Master_id}\t{a.Service_id}\t{a.Duration}\t{a.User_id}\t{a.Cancellation}");
+        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.MasterName}\t{a.ServiceName}\t{a.ServiceDuration}\t{a.UserName}\t{a.UserPhone}\t{a.Cancellation}");
     }
     // вывод для user
     var startDayTime = new TimeSpan(9,0, 0);
