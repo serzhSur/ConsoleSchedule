@@ -1,9 +1,6 @@
 ﻿using ConsoleSchedule.models;
 using Dapper;
 using Npgsql;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleSchedule.Repositories
 {

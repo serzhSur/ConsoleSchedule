@@ -1,16 +1,12 @@
-﻿using Dapper;
-using DbCreation;
-using Npgsql;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿
 using ConsoleSchedule.models;
 using ConsoleSchedule;
 using ConsoleSchedule.Services;
 using ConsoleSchedule.Repositories;
 
 
-Console.WriteLine("Start program...");
 string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
+Console.WriteLine("Start program...");
 try 
 {
     //var db = new DabasePostgreSQL();
@@ -36,35 +32,24 @@ try
 
     var appointment5 = new Appointment(new DateTime(2024, 9, 23, 10, 30, 0), master, services[0], user17);
     await appointmentRepository.MakeAppointment2(appointment5);
+
     var appointmentService = new AppointmentService(appointmentRepository);
 
 
-
-
-    
-
-
-
+    // вывод услуг
     Console.WriteLine($"Master: {master.Name}");
     Console.WriteLine("Services: ");
-    int numb = 0;   
-    foreach (var s in services) 
+    int numb = 0;
+    foreach (var s in services)
     {
         Console.WriteLine($"namber: {numb}\tservice: {s.Name}\tduration: {s.Duration}\tprice: 00");
         numb++;
     }
 
 
-    //Вывод для Master
-    Console.WriteLine("View for Master");
-    
-    var db = new AppointmentDetailsRepository(connectionString);
-    var appointmentDetails = new List<AppointmentDetails>(db.GetAll());
-    foreach (var a in appointmentDetails)
-    {
-        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.MasterName}\t{a.ServiceName}\t{a.ServiceDuration}\t{a.UserName}\t{a.UserPhone}\t{a.Cancellation}");
-    }
-    // вывод для user
+    // вывод для пользователей-клиентов
+    Console.WriteLine("View for User");
+
     var startDayTime = new TimeSpan(9,0, 0);
     var endDayTime = new TimeSpan(19, 00, 0);
     var intervalDay = new TimeSpan(0, 30, 0);
@@ -73,14 +58,7 @@ try
     {
         schedule.Add((i, i + intervalDay, "free"));
     }
-    /*
-    List<(TimeSpan start, TimeSpan end, string status)> occupitedTime = new List<(TimeSpan, TimeSpan,string)> 
-    { 
-        (new TimeSpan(9,0,0), new TimeSpan(10,0,0), "reserved"),
-        (new TimeSpan(12,0,0), new TimeSpan(12,30,0), "reserved"),
-        (new TimeSpan(10,15,0), new TimeSpan(10,45,0), "reserved")
-    };
-    */
+
     var occupitedTime = await appointmentService.GetBusyTime();
     schedule = schedule.Where(s =>
             !occupitedTime.Any(o =>
@@ -94,6 +72,18 @@ try
     }
 
 
+
+    //Вывод для Master
+    Console.WriteLine("View for Master");
+
+    var db = new AppointmentDetailsRepository(connectionString);
+    var appointmentDetails = new List<AppointmentDetails>(db.GetAll());
+    foreach (var a in appointmentDetails)
+    {
+        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.ServiceDuration}" +
+            $"\t{a.Date.Add( a.Duration).ToString("HH:mm")}" +
+            $"\t{a.ServiceName}\t{a.MasterName}\t{a.UserName}\t{a.UserPhone}\t{a.Cancellation}");
+    }
 
 }
 catch (Exception ex) 

@@ -3,7 +3,7 @@ using Npgsql;
 using Dapper;
 
 
-namespace ConsoleSchedule
+namespace ConsoleSchedule.Repositories
 {
     internal class UserRepository
     {
@@ -36,22 +36,22 @@ namespace ConsoleSchedule
             }
         }
 
-        public async Task<User> GetUserById(int id) 
+        public async Task<User> GetUserById(int id)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                try 
+                try
                 {
                     string query = "SELECT * FROM public.users WHERE id = @Id";
                     await con.OpenAsync();
                     var user = await con.QueryFirstOrDefaultAsync<User>(query, new { Id = id });
-                    if (user == null) 
+                    if (user == null)
                     {
                         throw new KeyNotFoundException($"User id-{id} not found");
                     }
                     return user;
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     // Логирование исключения
                     Console.WriteLine("ERROR UserRepository, GetUserById: " + ex.Message);

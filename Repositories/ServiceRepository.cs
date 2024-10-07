@@ -1,16 +1,16 @@
 ﻿using ConsoleSchedule.models;
 using Npgsql;
 using Dapper;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
-namespace ConsoleSchedule
+
+namespace ConsoleSchedule.Repositories
 {
-    internal class ServiceRepository 
+    internal class ServiceRepository
     {
         private string _connectionString;
-        public ServiceRepository(string connectionString) 
-        { 
+        public ServiceRepository(string connectionString)
+        {
             _connectionString = connectionString;
         }
         public async Task AddServiceAsync(Service service)
@@ -31,24 +31,24 @@ VALUES (@Name, @Duration, @Master_id)";
             }
         }
 
-        public async Task<List<Service>> GetMasterServices(int masterId) 
+        public async Task<List<Service>> GetMasterServices(int masterId)
         {
-            using (var con = new NpgsqlConnection(_connectionString)) 
+            using (var con = new NpgsqlConnection(_connectionString))
             {
                 string query = @"Select * FROM services WHERE master_id = @Id";
                 try
                 {
                     await con.OpenAsync();
                     var services = await con.QueryAsync<Service>(query, new { Id = masterId });
-                    if (services == null && !services.Any()) 
+                    if (services == null && !services.Any())
                     {
                         throw new KeyNotFoundException($"Services not found for masterId: {masterId}");
                     }
                     return services.ToList();
                 }
                 catch (Exception ex)
-                { 
-                    Console.WriteLine("ERROR ServiceRepository, AddServiceAsync: " +ex.Message);
+                {
+                    Console.WriteLine("ERROR ServiceRepository, AddServiceAsync: " + ex.Message);
                     throw;
                 }
             }

@@ -6,7 +6,7 @@ namespace ConsoleSchedule
 {
     internal class DabasePostgreSQL
     {
-        private string connString { get; } = "Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
+        private string _connString { get; } = "Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
 
         public async Task CreateDataBase()
         {
@@ -43,7 +43,7 @@ namespace ConsoleSchedule
 
         public async Task CreateTables()
         {
-            using (var conn = new NpgsqlConnection(connString))
+            using (var conn = new NpgsqlConnection(_connString))
             {
                 await conn.OpenAsync();
 

@@ -1,8 +1,7 @@
 ﻿using ConsoleSchedule.models;
 using Npgsql;
 using Dapper;
-using System.Numerics;
-using System;
+
 
 namespace ConsoleSchedule.Repositories
 {
