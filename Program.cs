@@ -1,4 +1,5 @@
 ﻿
+
 using ConsoleSchedule.models;
 using ConsoleSchedule;
 using ConsoleSchedule.Services;
@@ -16,28 +17,29 @@ try
     User user1 = await userRepository.GetUserById(1);
     User user2 = await userRepository.GetUserById(2);
     User user17 = await userRepository.GetUserById(17);
+    User user18 = await userRepository.GetUserById(18);
 
     var masterRepository = new MasterRepository(connectionString);
     Master master = await masterRepository.GetMasterById(1);
 
     var serviceRepository = new ServiceRepository(connectionString);
-    var masterId = master.Id;
-    List<Service> services = await serviceRepository.GetMasterServices(masterId);
-
+    List<Service> services = await serviceRepository.GetMasterServices(master);
+    var service30 = services.FirstOrDefault<Service>(s => s.Duration == new TimeSpan(0, 30, 0));
+    var service60 = services.FirstOrDefault(s=> s.Duration==new TimeSpan(1, 00, 0));
+    if (service30 == null || service60 == null) 
+    {
+        throw new KeyNotFoundException("Service 30/60 Not Found");
+    }
 
     var appointmentRepository = new AppointmentRepository(connectionString);
-    //var appointment4 = new Appointment(new DateTime(2024, 9, 23, 10, 15, 0), master, services[0], user17);
-    //await appointmentRepository.MakeAppointment(appointment4);
-    //await appointmentRepository.DeleteAppointmentByDate(appointment4);
-
-    var appointment5 = new Appointment(new DateTime(2024, 9, 23, 10, 30, 0), master, services[0], user17);
-    await appointmentRepository.MakeAppointment2(appointment5);
-
     var appointmentService = new AppointmentService(appointmentRepository);
+    
+    //var appointment5 = new Appointment(new DateTime(2024, 9, 23, 9, 30, 0), master, service30, user17);
+    //await appointmentService.MakeAppointment(appointment5);
+    //await appointmentService.CancelAppointmentById(7);
 
 
     // вывод услуг
-    Console.WriteLine($"Master: {master.Name}");
     Console.WriteLine("Services: ");
     int numb = 0;
     foreach (var s in services)
@@ -80,8 +82,7 @@ try
     var appointmentDetails = new List<AppointmentDetails>(db.GetAll());
     foreach (var a in appointmentDetails)
     {
-        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.ServiceDuration}" +
-            $"\t{a.Date.Add( a.Duration).ToString("HH:mm")}" +
+        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.Date.Add(a.Duration).ToString("HH:mm")}\t{a.Duration}" +
             $"\t{a.ServiceName}\t{a.MasterName}\t{a.UserName}\t{a.UserPhone}\t{a.Cancellation}");
     }
 

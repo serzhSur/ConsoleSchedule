@@ -31,18 +31,19 @@ VALUES (@Name, @Duration, @Master_id)";
             }
         }
 
-        public async Task<List<Service>> GetMasterServices(int masterId)
+        public async Task<List<Service>> GetMasterServices(Master master)
         {
+            //int masterId = master.Id;
             using (var con = new NpgsqlConnection(_connectionString))
             {
                 string query = @"Select * FROM services WHERE master_id = @Id";
                 try
                 {
                     await con.OpenAsync();
-                    var services = await con.QueryAsync<Service>(query, new { Id = masterId });
+                    var services = await con.QueryAsync<Service>(query, new { Id = master.Id });
                     if (services == null && !services.Any())
                     {
-                        throw new KeyNotFoundException($"Services not found for masterId: {masterId}");
+                        throw new KeyNotFoundException($"Services not found for masterId: {master.Id}");
                     }
                     return services.ToList();
                 }
