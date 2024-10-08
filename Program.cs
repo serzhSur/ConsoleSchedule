@@ -1,8 +1,4 @@
-﻿using Dapper;
-using DbCreation;
-using Npgsql;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using DbCreation;
 
 Console.WriteLine("Start program...");
 
@@ -48,8 +44,6 @@ var service2 = new Service
 //await service2.AddServiceAsync(service2);
 
 
-
-
 var appointment1 = new Appointment(new DateTime(2024, 9, 23, 9, 0, 0), master, service1, user1);
 
 List<Appointment> appointments = new List<Appointment>() { appointment1 };
@@ -65,6 +59,7 @@ for (var t = appointment2.DateTime; t < appointment2.DateTime + appointment2.Dur
 {
     appTime.Add(t);
 }
+
 bool timeOccupied = false;
 for (var i = 0; i < appTime.Count; i++)
 {
@@ -74,8 +69,8 @@ for (var i = 0; i < appTime.Count; i++)
         Console.WriteLine("interval is incorrect");
         break;
     }
-
 }
+
 if (timeOccupied == false)
 {
     appointments.Add(appointment2);
@@ -105,6 +100,7 @@ for (DateTime i = startTime; i < finishTime; i += interval)
             status = true;
         }
     }
+
     Console.WriteLine($"{i}\t{status}");
 }
 
@@ -126,8 +122,10 @@ List<DateTime> GetBusyTime(List<Appointment> appointments)
             busyTime.Add(i);
         }
     }
+
     return busyTime;
 }
+
 void CanselAppointment(Appointment appointment, IEnumerable<DaySchedule> daySchedule)
 {
     var canselIntervals = daySchedule.Where(i => i.Busy == true && i.AppointmentId == appointment.Id);
@@ -140,14 +138,15 @@ void CanselAppointment(Appointment appointment, IEnumerable<DaySchedule> daySche
         }
     }
 }
+
 List<Appointment> CreateAppointment(Appointment appointment, List<DateTime> busyTime)
 {
-
     var appTime = new List<DateTime>();
     for (var t = appointment.DateTime; t < appointment.DateTime + appointment.Duration; t += master.DayInterval)
     {
         appTime.Add(t);
     }
+
     bool timeOccupied = false;
     for (var i = 0; i < appTime.Count; i++)
     {
@@ -157,13 +156,14 @@ List<Appointment> CreateAppointment(Appointment appointment, List<DateTime> busy
             Console.WriteLine("interval is incorrect");
             break;
         }
-
     }
+
     if (timeOccupied == false)
     {
         appointments.Add(appointment);
         //запись в базу данных
         Console.WriteLine("Appointment is Create");
     }
+
     return appointments;
 }
