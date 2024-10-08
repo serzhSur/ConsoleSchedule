@@ -1,23 +1,25 @@
 ﻿
-
 using ConsoleSchedule.models;
-using ConsoleSchedule;
 using ConsoleSchedule.Services;
 using ConsoleSchedule.Repositories;
+using ConsoleSchedule;
 
 
 string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
 Console.WriteLine("Start program...");
 try 
 {
-    //var db = new DabasePostgreSQL();
-    //await db.CreateDataBase();
-    //await db.CreateTables();
+    //var appointmentDetailsRepository = new DabasePostgreSQL();
+    //await appointmentDetailsRepository.CreateDataBase();
+    //await appointmentDetailsRepository.CreateTables();
     var userRepository = new UserRepository(connectionString);
     User user1 = await userRepository.GetUserById(1);
     User user2 = await userRepository.GetUserById(2);
     User user17 = await userRepository.GetUserById(17);
     User user18 = await userRepository.GetUserById(18);
+    //User userW = new User() {Name="Wolverine", PhoneNumber="900900900" };
+    //await userRepository.AddUser(userW);
+    var userW=await userRepository.GetUserById(20);
 
     var masterRepository = new MasterRepository(connectionString);
     Master master = await masterRepository.GetMasterById(1);
@@ -33,10 +35,10 @@ try
 
     var appointmentRepository = new AppointmentRepository(connectionString);
     var appointmentService = new AppointmentService(appointmentRepository);
-    
-    //var appointment5 = new Appointment(new DateTime(2024, 9, 23, 9, 30, 0), master, service30, user17);
-    //await appointmentService.MakeAppointment(appointment5);
-    //await appointmentService.CancelAppointmentById(7);
+
+    var appointment6 = new Appointment(new DateTime(2024, 9, 23, 11, 0, 0), master, service30, user1);
+    //await appointmentService.MakeAppointment(appointment6);
+    //await appointmentService.CancelAppointmentById(22);
 
 
     // вывод услуг
@@ -76,20 +78,30 @@ try
 
 
     //Вывод для Master
-    Console.WriteLine("View for Master");
-
-    var db = new AppointmentDetailsRepository(connectionString);
-    var appointmentDetails = new List<AppointmentDetails>(db.GetAll());
-    foreach (var a in appointmentDetails)
+    var appointmentDetailsRepository = new AppointmentDetailsRepository(connectionString);
+    var appointmentDetails = new List<AppointmentDetails>(appointmentDetailsRepository.GetAll());
+    
+    var filteredAppointments = appointmentDetails.Where(a=> a.Cancellation==false)
+        .OrderBy(a=> a.Date)
+        .ToList();
+    Console.WriteLine($"Appointments to Master: {filteredAppointments.Count}");
+    foreach (var a in filteredAppointments)
     {
-        Console.WriteLine($"{a.Id}\t{a.Date}\t{a.Date.Add(a.Duration).ToString("HH:mm")}\t{a.Duration}" +
-            $"\t{a.ServiceName}\t{a.MasterName}\t{a.UserName}\t{a.UserPhone}\t{a.Cancellation}");
+        a.ShowConsole(a);
     }
-
+    //вывод отмененных записей
+    var cancelAppointments = appointmentDetails.Where(a=> a.Cancellation==true)
+        .OrderBy(a=> a.Date)
+        .ToList();
+    Console.WriteLine($"Cancel Appointments: {cancelAppointments.Count}");
+    foreach (var a in cancelAppointments)
+    {
+        a.ShowConsole(a);
+    }
 }
 catch (Exception ex) 
 { 
-    Console.WriteLine("APPLICATION ERROR: "+ ex.Message);
+    Console.WriteLine("APPLICATION ERROR: \n"+ex.Message+ ex.StackTrace);
 }
 finally 
 {

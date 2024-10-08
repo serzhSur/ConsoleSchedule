@@ -18,16 +18,17 @@ namespace ConsoleSchedule.Repositories
             using (var con = new NpgsqlConnection(_connectionString))
             {
                 string query = @"INSERT INTO appointments (date, duration, master_id, service_id, user_id, cancellation) 
-VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
+                                  VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
                 try
                 {
+                    await con.OpenAsync();
                     await con.ExecuteAsync(query, appointment);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERROR class AppointmentRepository, InserAppointment: " + ex.Message);
-                }
-
+                    Console.WriteLine("Error class AppointmentRepository, InserAppointment: " + ex.Message);
+                    throw;
+                } 
             }
         }
 
@@ -66,7 +67,7 @@ VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERROR class AppointmentRepository, GetAllAppointments: " + ex.Message);
+                    Console.WriteLine("Error class AppointmentRepository, GetAllAppointments: " + ex.Message);
                     throw;
                 }
             }
@@ -88,7 +89,8 @@ VALUES (@Date, @Duration, @Master_id, @Service_id, @User_id, @Cancellation)";
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERROR class AppointmentRepository, DeleteAppointment " + ex.Message);
+                    Console.WriteLine("Error class AppointmentRepository, DeleteAppointment " + ex.Message);
+                    throw;
                 }
             }
         }
@@ -109,7 +111,7 @@ WHERE id = @Id";
                 }
                 catch (Exception ex) 
                 { 
-                    Console.WriteLine("ERROR class AppointmentRepository, UpdeteAppointment() "+ex.Message);
+                    Console.WriteLine("Error class AppointmentRepository, UpdeteAppointment() "+ex.Message);
                     throw;
                 }
             }

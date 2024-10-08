@@ -47,7 +47,7 @@ namespace ConsoleSchedule.Repositories
                     var user = await con.QueryFirstOrDefaultAsync<User>(query, new { Id = id });
                     if (user == null)
                     {
-                        throw new KeyNotFoundException($"User id-{id} not found");
+                        throw new KeyNotFoundException($"User id:{id} Not Found");
                     }
                     return user;
                 }

@@ -10,16 +10,16 @@ namespace ConsoleSchedule.Services
     internal class AppointmentService
     {
         private AppointmentRepository _repository;
-        
+
         public AppointmentService(AppointmentRepository appointmentRepository)
         {
             _repository = appointmentRepository;
         }
 
-        public async Task <List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime()
+        public async Task<List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime()
         {
             List<Appointment> appointments = await _repository.GetAllAppointments();
-            
+
             List<(TimeSpan start, TimeSpan end, string status)> busyTime =
                 appointments.Select(a =>
                 {
@@ -33,53 +33,38 @@ namespace ConsoleSchedule.Services
 
         public async Task MakeAppointment(Appointment appointment)
         {
-            List<Appointment> appointments = await _repository.GetAllAppointments();
-            foreach (var a in appointments)
+            if (appointment == null || appointment.User_id <= 0)
             {
-                a.EndTime = a.Date + a.Duration;
-            }
-
-
-            List<(TimeSpan start, TimeSpan end)> busyTime = new List<(TimeSpan, TimeSpan)>();
-            foreach (var a in appointments)
-            {
-                busyTime.Add((a.Date.TimeOfDay, a.EndTime.TimeOfDay));
-            }
-
-            var newTimeStart = appointment.Date.TimeOfDay;
-            var newTimeEnd = appointment.EndTime.TimeOfDay;
-
-            bool timeOccupied = false;
-            foreach (var t in busyTime)
-            {
-                if (newTimeStart > t.start && newTimeStart >= t.end || newTimeStart < t.start && newTimeEnd <= t.start)
-                {
-                    //timeOccupied = false;
-                }
-                else
-                {
-                    timeOccupied = true;//time is buisy
-                    break;
-                }
-            }
-
-            if (timeOccupied)
-            {
-                Console.WriteLine($"Appointment {appointment.Date} can't be made: Time interval is busy ");
+                throw new ArgumentException("Error AppointmentService, MakeAppointment: appointment must be appointment.User_id> 0 && appointment != null");
             }
             else
             {
-                await _repository.InsertAppointment(appointment);
-                Console.WriteLine($"Appointment Date: {appointment.Date} is Created");
-            }
-        }
+                var busyTime = new List<(TimeSpan start, TimeSpan end, string status)>(await GetBusyTime());
 
-        public async Task CancelAppointmentById(int id) 
-        { 
+                var newTimeStart = appointment.Date.TimeOfDay;
+                var newTimeEnd = appointment.Date.TimeOfDay + appointment.Duration;
+
+                bool timeOccupited = busyTime.Any(busy => newTimeStart < busy.end && newTimeEnd > busy.start);
+                
+                if (timeOccupited)
+                {
+                    Console.WriteLine($"Appointment {appointment.Date} can't be made: Time interval is busy ");
+                }
+                else 
+                {
+                    await _repository.InsertAppointment(appointment);
+                    Console.WriteLine($"Appointment Date: {appointment.Date} is Created");
+                }
+
+            }
+
+        }
+        public async Task CancelAppointmentById(int id)
+        {
             Appointment appointment = await _repository.GetAppointmentById(id);
             appointment.Cancellation = true;
             appointment.Duration = new TimeSpan(0, 0, 0);
-           
+
             await _repository.UpdateAppointment(appointment);
         }
 

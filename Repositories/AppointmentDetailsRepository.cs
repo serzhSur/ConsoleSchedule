@@ -36,7 +36,8 @@ namespace ConsoleSchedule.Repositories
                 JOIN 
                     services s ON a.service_id = s.id
                 JOIN 
-                    users u ON a.user_id = u.id";
+                    users u ON a.user_id = u.id
+                ORDER BY a.date ASC";
                     con.Open();
                     return con.Query<AppointmentDetails>(query);
                 }
