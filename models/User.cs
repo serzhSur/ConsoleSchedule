@@ -1,6 +1,6 @@
 ﻿
 
-namespace ConsoleSchedule.models
+namespace ConsoleSchedule.Models
 {
     public class User
     {

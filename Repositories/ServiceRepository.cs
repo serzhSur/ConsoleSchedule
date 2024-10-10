@@ -1,4 +1,4 @@
-﻿using ConsoleSchedule.models;
+﻿using ConsoleSchedule.Models;
 using Npgsql;
 using Dapper;
 

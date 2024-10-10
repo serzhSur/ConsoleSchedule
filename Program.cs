@@ -1,5 +1,5 @@
 ﻿
-using ConsoleSchedule.models;
+using ConsoleSchedule.Models;
 using ConsoleSchedule.Services;
 using ConsoleSchedule.Repositories;
 using ConsoleSchedule;
@@ -12,9 +12,7 @@ try
     var dataBase = new DatabasePostgreSQL(connectionString);
     await dataBase.CreateDataBase("master_schedule");
     await dataBase.CreateTables();
-    //var appointmentDetailsRepository = new DatabasePostgreSQL();
-    //await appointmentDetailsRepository.CreateDataBase();
-    //await appointmentDetailsRepository.CreateTables();
+
     var userRepository = new UserRepository(connectionString);
     User user1 = await userRepository.GetUserById(1);
     User user2 = await userRepository.GetUserById(2);

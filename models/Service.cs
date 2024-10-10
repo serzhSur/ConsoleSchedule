@@ -1,5 +1,5 @@
 ﻿
-namespace ConsoleSchedule.models
+namespace ConsoleSchedule.Models
 {
     internal class Service
     {

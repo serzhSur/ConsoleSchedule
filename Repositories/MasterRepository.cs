@@ -1,6 +1,6 @@
 ﻿using Npgsql;
 using Dapper;
-using ConsoleSchedule.models;
+using ConsoleSchedule.Models;
 
 
 namespace ConsoleSchedule.Repositories
