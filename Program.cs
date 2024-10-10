@@ -5,14 +5,15 @@ using ConsoleSchedule.Repositories;
 using ConsoleSchedule;
 
 
-string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
+string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Database=master_schedule";
 Console.WriteLine("Start program...");
 try 
 {
     var dataBase = new DatabasePostgreSQL(connectionString);
     await dataBase.CreateDataBase("master_schedule");
     await dataBase.CreateTables();
-
+    await dataBase.CreateTestRecords();
+    /*
     var userRepository = new UserRepository(connectionString);
     User user1 = await userRepository.GetUserById(1);
     User user2 = await userRepository.GetUserById(2);
@@ -99,7 +100,9 @@ try
     {
         a.ShowConsole(a);
     }
+    */
 }
+
 catch (Exception ex) 
 { 
     Console.WriteLine("APPLICATION ERROR: \n"+ex.Message+ ex.StackTrace);

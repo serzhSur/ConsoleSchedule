@@ -14,7 +14,7 @@ namespace ConsoleSchedule.Repositories
         {
             _connString = connString;
         }
-        public async Task AddMasterAsync(Master master)
+        public async Task AddMaster(Master master)
         {
             using (var con = new NpgsqlConnection(_connString))
             {
@@ -27,7 +27,7 @@ namespace ConsoleSchedule.Repositories
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERROR: MasterRepository, AddMasterAsync - " + ex.Message);
+                    Console.WriteLine("ERROR: MasterRepository, AddMaster - " + ex.Message);
                 }
             }
         }
@@ -48,7 +48,26 @@ namespace ConsoleSchedule.Repositories
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ERROR Master, GetMasterById: " + ex.Message);
+                    Console.WriteLine("ERROR MasterRepository, GetMasterById: " + ex.Message);
+                    throw;
+                }
+            }
+        }
+
+        public async Task<IEnumerable<Master>> GetAllMasters()
+        {
+            using (var con = new NpgsqlConnection(_connString))
+            {
+                try
+                {
+                    string query = "SELECT * FROM masters";
+                    await con.OpenAsync();
+
+                    return await con.QueryAsync<Master>(query);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ERROR MasterRepository, GetAllMasters(): " + ex.Message);
                     throw;
                 }
             }

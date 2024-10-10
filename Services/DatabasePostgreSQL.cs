@@ -1,4 +1,6 @@
-﻿using Dapper;
+﻿using ConsoleSchedule.Models;
+using ConsoleSchedule.Repositories;
+using Dapper;
 using Npgsql;
 
 
@@ -6,8 +8,8 @@ namespace ConsoleSchedule.Services
 {
     internal class DatabasePostgreSQL
     {
-        private string _connString; //{ get; } = "Host=localhost;Username=postgres;Password=Sur999; Database=mastersscheduledata";
-        public DatabasePostgreSQL(string connectionString) 
+        private string _connString; 
+        public DatabasePostgreSQL(string connectionString)
         {
             _connString = connectionString;
         }
@@ -15,7 +17,7 @@ namespace ConsoleSchedule.Services
         public async Task CreateDataBase(string dbName)
         {
             //string connString = $"Host=localhost;Username=postgres;Password=Sur999";
-            dbName = "mastersscheduledata";
+            //dbName = "mastersscheduledata";
 
             using (var conn = new NpgsqlConnection(_connString))
             {
@@ -126,6 +128,74 @@ namespace ConsoleSchedule.Services
         }
         public async Task CreateTestRecords()
         {
+            //добавление пользователей
+            bool hasRecords = await HasRecords("users");
+            if (hasRecords == false)
+            {
+                var users = new List<User>()
+                {
+                  new User(){Name= "userBob", PhoneNumber= "+79101100000" },
+                  new User(){Name = "userTom", PhoneNumber= "+89061002222"},
+                  new User(){Name= "userDeadPool", PhoneNumber = "+79001001111"},
+                  new User(){Name = "userTerminator", PhoneNumber= "+89031002233"},
+                };
+                var userRepo = new UserRepository(_connString);
+                foreach (var u in users)
+                {
+                    await userRepo.AddUser(u);
+                }
+            }
+            //добавление мастеров и сервисов
+            hasRecords = await HasRecords("masters");
+            if (hasRecords == false) 
+            {
+                var masters = new List<Master>()
+                {
+                  new Master(){Name="masterDasha", Speciality="massage",Day_interval=new TimeSpan(1,00,0)},
+                  new Master(){Name="masterOlesya", Speciality="barber",Day_interval=new TimeSpan(0,30,0)}
+                };
+                var masterRepo = new MasterRepository(_connString);
+                foreach (var m in masters)
+                {
+                    await masterRepo.AddMaster(m);
+                }
+                var master1 = await masterRepo.GetMasterById(1);
+                var master2 = masterRepo.GetMasterById(2);
+                //добавление сервисов
+                var services = new List<Service>()
+                {
+                  new Service("massage-Top", new TimeSpan(1,0,0), master1),
+                  new Service("massage-full", new TimeSpan(2,0,0), master1),
+                  new Service("massage-Thai", new TimeSpan(3,0,0), master1),
+                  new Service("haircut-man", new TimeSpan(0,30,0), await master2),
+                  new Service("haircut-woman", new TimeSpan(1,00,0), await master2),
+                  new Service("hair-coloring", new TimeSpan(2,00,0), await master2)
+                };
+                var serviceRepo = new ServiceRepository(_connString);
+                foreach (var s in services)
+                {
+                    await serviceRepo.AddServiceAsync(s);
+                }
+            }
+        }
+
+        public async Task<bool> HasRecords(string tableName)
+        {
+            using (var con = new NpgsqlConnection(_connString))
+            {
+                try
+                {
+                    string sql = $"SELECT COUNT(*) FROM \"{tableName}\"";
+                    await con.OpenAsync();
+                    var count = await con.ExecuteScalarAsync<int>(sql);
+                    return count > 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error DatabasePostgreSQL, HasRecords(): " + ex.Message);
+                    throw;
+                }
+            }
         }
     }
 }
