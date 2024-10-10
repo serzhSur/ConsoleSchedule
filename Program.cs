@@ -9,7 +9,10 @@ string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Dat
 Console.WriteLine("Start program...");
 try 
 {
-    //var appointmentDetailsRepository = new DabasePostgreSQL();
+    var dataBase = new DatabasePostgreSQL(connectionString);
+    await dataBase.CreateDataBase("master_schedule");
+    await dataBase.CreateTables();
+    //var appointmentDetailsRepository = new DatabasePostgreSQL();
     //await appointmentDetailsRepository.CreateDataBase();
     //await appointmentDetailsRepository.CreateTables();
     var userRepository = new UserRepository(connectionString);
