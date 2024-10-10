@@ -1,5 +1,5 @@
 ﻿
-namespace ConsoleSchedule.models
+namespace ConsoleSchedule.Models
 {
     internal class  Master
     {
@@ -7,5 +7,6 @@ namespace ConsoleSchedule.models
         public string Name { get; set; } = "undefined";
         public string Speciality { get; set; }
         public TimeSpan Day_interval { get; set; } 
+       
     }
 }
