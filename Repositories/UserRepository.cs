@@ -59,5 +59,24 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
+
+        public async Task<IEnumerable<User>> GetAllUsers() 
+        {
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    string query = "SELECT * FROM users";
+                    await con.OpenAsync();
+                    return await con.QueryAsync<User>(query);
+                }
+                catch (Exception ex)
+                {
+                    // Логирование исключения
+                    Console.WriteLine("ERROR UserRepository, GetAllUsers(): " + ex.Message);
+                    throw;// Повторно выбрасываем исключение для дальнейшей обработки
+                }
+            }
+        }
     }
 }

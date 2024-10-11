@@ -13,8 +13,8 @@ namespace ConsoleSchedule.Models
        
         public void ShowConsole(AppointmentDetails a)
         {
-            Console.WriteLine($"{a.Id}\t{a.Date}\t{a.Date.Add(a.Duration).ToString("HH:mm")}\t{a.Duration}" +
-                $"\t{a.ServiceName}\t{a.MasterName}\t{a.UserName}\t\t{a.UserPhone}\t{a.Cancellation}");
+            Console.WriteLine($"{a.Id,-5}{a.Date,-25}{a.Date.Add(a.Duration).ToString("HH:mm"),-10}{a.Duration,-10}" +
+                $"{a.ServiceName,-20}{a.MasterName,-20}{a.UserName,-20}{a.UserPhone,-15}{a.Cancellation,-10}");
         }
     }
     

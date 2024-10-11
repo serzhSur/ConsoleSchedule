@@ -18,7 +18,7 @@ namespace ConsoleSchedule.Repositories
             using (var con = new NpgsqlConnection(_connectionString))
             {
                 string query = @"INSERT INTO services (name, duration, master_id) 
-VALUES (@Name, @Duration, @Master_id)";
+                                 VALUES (@Name, @Duration, @Master_id)";
                 try
                 {
                     await con.OpenAsync();
@@ -31,7 +31,7 @@ VALUES (@Name, @Duration, @Master_id)";
             }
         }
 
-        public async Task<List<Service>> GetMasterServices(Master master)
+        public async Task<IEnumerable<Service>> GetMasterServices(Master master)
         {
             //int masterId = master.Id;
             using (var con = new NpgsqlConnection(_connectionString))

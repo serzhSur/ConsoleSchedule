@@ -13,10 +13,11 @@ namespace ConsoleSchedule.Repositories
             _connectionString = connectionString;
         }
 
-        public IEnumerable<AppointmentDetails> GetAll() 
+        public IEnumerable<AppointmentDetails> GetAll(Master master) 
         {
             using (var con = new NpgsqlConnection(_connectionString)) 
             {
+                int masterId=master.Id;
                 try 
                 {
                     string query = @"SELECT 
@@ -37,9 +38,10 @@ namespace ConsoleSchedule.Repositories
                     services s ON a.service_id = s.id
                 JOIN 
                     users u ON a.user_id = u.id
+                WHERE a.master_id = @id
                 ORDER BY a.date ASC";
                     con.Open();
-                    return con.Query<AppointmentDetails>(query);
+                    return con.Query<AppointmentDetails>(query, new { id = masterId});
                 }
                 catch (Exception ex) 
                 { 

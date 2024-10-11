@@ -8,7 +8,7 @@ namespace ConsoleSchedule.Services
 {
     internal class DatabasePostgreSQL
     {
-        private string _connString; 
+        private string _connString;
         public DatabasePostgreSQL(string connectionString)
         {
             _connString = connectionString;
@@ -16,9 +16,6 @@ namespace ConsoleSchedule.Services
 
         public async Task CreateDataBase(string dbName)
         {
-            //string connString = $"Host=localhost;Username=postgres;Password=Sur999";
-            //dbName = "mastersscheduledata";
-
             using (var conn = new NpgsqlConnection(_connString))
             {
                 string checkDbQ = "SELECT 1 FROM pg_database WHERE datname = @dbname";
@@ -32,7 +29,7 @@ namespace ConsoleSchedule.Services
 
                         if (result == null)
                         {
-                            string createDbQ = $"CREATE DATABASE \"{dbName}\""; // Используйте кавычки для имен с заглавными буквами
+                            string createDbQ = $"CREATE DATABASE \"{dbName}\"";
                             using (var createCommand = new NpgsqlCommand(createDbQ, conn))
                             {
                                 await createCommand.ExecuteNonQueryAsync();
@@ -128,6 +125,10 @@ namespace ConsoleSchedule.Services
         }
         public async Task CreateTestRecords()
         {
+            var masterRepo = new MasterRepository(_connString);
+            var serviceRepo = new ServiceRepository(_connString);
+            var userRepo = new UserRepository(_connString);
+            var appRepo = new AppointmentRepository(_connString);
             //добавление пользователей
             bool hasRecords = await HasRecords("users");
             if (hasRecords == false)
@@ -139,7 +140,6 @@ namespace ConsoleSchedule.Services
                   new User(){Name= "userDeadPool", PhoneNumber = "+79001001111"},
                   new User(){Name = "userTerminator", PhoneNumber= "+89031002233"},
                 };
-                var userRepo = new UserRepository(_connString);
                 foreach (var u in users)
                 {
                     await userRepo.AddUser(u);
@@ -147,14 +147,13 @@ namespace ConsoleSchedule.Services
             }
             //добавление мастеров и сервисов
             hasRecords = await HasRecords("masters");
-            if (hasRecords == false) 
+            if (hasRecords == false)
             {
                 var masters = new List<Master>()
                 {
                   new Master(){Name="masterDasha", Speciality="massage",Day_interval=new TimeSpan(1,00,0)},
                   new Master(){Name="masterOlesya", Speciality="barber",Day_interval=new TimeSpan(0,30,0)}
                 };
-                var masterRepo = new MasterRepository(_connString);
                 foreach (var m in masters)
                 {
                     await masterRepo.AddMaster(m);
@@ -171,15 +170,21 @@ namespace ConsoleSchedule.Services
                   new Service("haircut-woman", new TimeSpan(1,00,0), await master2),
                   new Service("hair-coloring", new TimeSpan(2,00,0), await master2)
                 };
-                var serviceRepo = new ServiceRepository(_connString);
                 foreach (var s in services)
                 {
                     await serviceRepo.AddServiceAsync(s);
                 }
             }
+            //добавление записей к мастеру
+            hasRecords = await HasRecords("appointments");
+            if (hasRecords == false)
+            {
+                await CreateAppointmentTestRecords(new DateTime(2024, 10, 14, 10, 0, 0), 1, masterRepo, serviceRepo, userRepo, appRepo);
+                await CreateAppointmentTestRecords(new DateTime(2024, 10, 14, 9, 0, 0), 2, masterRepo, serviceRepo, userRepo, appRepo);
+            }
         }
 
-        public async Task<bool> HasRecords(string tableName)
+        private async Task<bool> HasRecords(string tableName)
         {
             using (var con = new NpgsqlConnection(_connString))
             {
@@ -195,6 +200,30 @@ namespace ConsoleSchedule.Services
                     Console.WriteLine("Error DatabasePostgreSQL, HasRecords(): " + ex.Message);
                     throw;
                 }
+            }
+        }
+        private static async Task CreateAppointmentTestRecords(DateTime date, int masterId, MasterRepository masterRepo, ServiceRepository serviceRepo, UserRepository userRepo, AppointmentRepository appRepo)
+        {
+            var interval = new TimeSpan(1, 0, 0);
+            var master = await masterRepo.GetMasterById(masterId);
+            var services = new List<Service>(await serviceRepo.GetMasterServices(master));
+            var users = new List<User>(await userRepo.GetAllUsers());
+            if (!services.Any() || !users.Any())
+            {
+                throw new InvalidOperationException("Error class DatabasePostgreSQL, CreateTestRecords: Empty List (services or users)");
+            }
+
+            var appointments = new List<Appointment>();
+            for (int i = 0; i < services.Count; i++)
+            {
+                var user = users[i % users.Count];
+                var appointment = new Appointment(date, master, services[i], user);
+                appointments.Add(appointment);
+                date = date.Add(services[i].Duration + interval);
+            }
+            foreach (var a in appointments)
+            {
+                await appRepo.InsertAppointment(a);
             }
         }
     }

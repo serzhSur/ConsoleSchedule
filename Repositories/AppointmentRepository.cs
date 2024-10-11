@@ -54,15 +54,15 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
-        public async Task<List<Appointment>> GetAllAppointments()
+        public async Task<List<Appointment>> GetAllAppointments(int masterId)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                string query = @"SELECT * FROM public.appointments WHERE cancellation = @Cancel";
+                string query = @"SELECT * FROM public.appointments WHERE cancellation = @Cancel AND master_id = @Id";
                 try
                 {
                     await con.OpenAsync();
-                    var appointments = await con.QueryAsync<Appointment>(query, new { Cancel=false});
+                    var appointments = await con.QueryAsync<Appointment>(query, new { Cancel=false, Id= masterId });
                     return appointments.ToList();
                 }
                 catch (Exception ex)

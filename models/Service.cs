@@ -7,7 +7,9 @@ namespace ConsoleSchedule.Models
         public string Name { get; set; }
         public TimeSpan Duration { get; set; }
         public int Master_id { get; set; }
-
+        public Service() 
+        { 
+        }
         public Service(string name, TimeSpan duration, Master master) 
         { 
             Name = name;

@@ -16,9 +16,9 @@ namespace ConsoleSchedule.Services
             _repository = appointmentRepository;
         }
 
-        public async Task<List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime()
+        public async Task<List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime(int masterId)
         {
-            List<Appointment> appointments = await _repository.GetAllAppointments();
+            List<Appointment> appointments = await _repository.GetAllAppointments(masterId);
 
             List<(TimeSpan start, TimeSpan end, string status)> busyTime =
                 appointments.Select(a =>
@@ -39,7 +39,8 @@ namespace ConsoleSchedule.Services
             }
             else
             {
-                var busyTime = new List<(TimeSpan start, TimeSpan end, string status)>(await GetBusyTime());
+                int masterId = appointment.Master_id;
+                var busyTime = new List<(TimeSpan start, TimeSpan end, string status)>(await GetBusyTime(masterId));
 
                 var newTimeStart = appointment.Date.TimeOfDay;
                 var newTimeEnd = appointment.Date.TimeOfDay + appointment.Duration;
