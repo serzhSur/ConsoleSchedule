@@ -11,12 +11,12 @@ Console.WriteLine("Start program...");
 try 
 {
     var dataBase = new DatabasePostgreSQL(connectionString);
-    await dataBase.CreateDataBase("master_schedule");
+    await dataBase.CreateDataBase("Host=localhost;Username=postgres;Password=Sur999", "master_schedule");
     await dataBase.CreateTables();
     await dataBase.CreateTestRecords();
 
     var masterRepository = new MasterRepository(connectionString);
-    Master master = await masterRepository.GetMasterById(2);
+    Master master = await masterRepository.GetMasterById(1);
 
     var serviceRepository = new ServiceRepository(connectionString);
     var services = new List<Service>( await serviceRepository.GetMasterServices(master));

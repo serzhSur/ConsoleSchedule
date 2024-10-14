@@ -14,9 +14,9 @@ namespace ConsoleSchedule.Services
             _connString = connectionString;
         }
 
-        public async Task CreateDataBase(string dbName)
+        public async Task CreateDataBase(string postgresConnection, string dbName)
         {
-            using (var conn = new NpgsqlConnection(_connString))
+            using (var conn = new NpgsqlConnection(postgresConnection))
             {
                 string checkDbQ = "SELECT 1 FROM pg_database WHERE datname = @dbname";
                 try
@@ -29,8 +29,8 @@ namespace ConsoleSchedule.Services
 
                         if (result == null)
                         {
-                            string createDbQ = $"CREATE DATABASE \"{dbName}\"";
-                            using (var createCommand = new NpgsqlCommand(createDbQ, conn))
+                            string sql = $"CREATE DATABASE \"{dbName}\"";
+                            using (var createCommand = new NpgsqlCommand(sql, conn))
                             {
                                 await createCommand.ExecuteNonQueryAsync();
                             }
