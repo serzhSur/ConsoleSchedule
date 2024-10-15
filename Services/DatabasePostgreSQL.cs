@@ -69,6 +69,8 @@ namespace ConsoleSchedule.Services
                 string sql = @"CREATE TABLE IF NOT EXISTS masters (
                                 id SERIAL PRIMARY KEY,
                                 name VARCHAR(30) NOT NULL,
+                                start_day_time INTERVAL NOT NULL,
+                                end_day_time INTERVAL NOT NULL,
                                 day_interval INTERVAL NOT NULL,
                                 speciality VARCHAR(30)
                               )";
@@ -151,8 +153,8 @@ namespace ConsoleSchedule.Services
             {
                 var masters = new List<Master>()
                 {
-                  new Master(){Name="masterDasha", Speciality="massage",Day_interval=new TimeSpan(1,00,0)},
-                  new Master(){Name="masterOlesya", Speciality="barber",Day_interval=new TimeSpan(0,30,0)}
+                  new Master("masterDasha", "massage",new TimeSpan(1,00,0),new TimeSpan(8,00,0), new TimeSpan(20,0,0)),
+                  new Master("masterOlesya", "barber",new TimeSpan(0,30,0), new TimeSpan(9,00,0), new TimeSpan(18,0,0))
                 };
                 foreach (var m in masters)
                 {

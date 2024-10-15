@@ -32,33 +32,20 @@ try
         Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
     }
     
-    // вывод для пользователей-клиентов
+    // вывод расписания для user
+    var scheduleService = new ScheduleService(appointmentService);
+    var schedule= await scheduleService.CreateScheduleForUser(master);
     Console.WriteLine("View for User");
-
-    var startDayTime = new TimeSpan(9,0, 0);
-    var endDayTime = new TimeSpan(19, 00, 0);
-    var intervalDay = master.Day_interval;
-    List<(TimeSpan start, TimeSpan end, string status)>schedule = new List<(TimeSpan, TimeSpan, string)>();
-    for (var i=startDayTime; i < endDayTime; i += intervalDay) 
-    {
-        schedule.Add((i, i + intervalDay, "free"));
-    }
-
-    var occupitedTime = await appointmentService.GetBusyTime(master.Id);
-    schedule = schedule.Where(s =>
-            !occupitedTime.Any(o =>
-                s.start < o.end && s.end > o.start)).ToList();
-
-    schedule.AddRange(occupitedTime);
-    schedule.Sort((x, y) => x.start.CompareTo(y.start));
+    Console.WriteLine($"{"StartTime", 8}{"EndTime",10}{"Status",8}");
+    Console.WriteLine(new string('-',30));
     foreach (var i in schedule) 
     {
-        Console.WriteLine($"{i.start}--{i.end}\t{i.status}");
+        Console.WriteLine($"{i.start.ToString(@"hh\:mm"), 8} -- {i.end.ToString(@"hh\:mm"),-8}{i.status,5}");
     }
 
+    
 
-
-    //Вывод для Master
+    //Вывод расписания для Master
     var appointmentDetailsRepository = new AppointmentDetailsRepository(connectionString);
     var appointmentDetails = new List<AppointmentDetails>(appointmentDetailsRepository.GetAll(master));
     

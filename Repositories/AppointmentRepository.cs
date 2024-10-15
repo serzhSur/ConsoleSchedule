@@ -100,10 +100,10 @@ namespace ConsoleSchedule.Repositories
             using (var con = new NpgsqlConnection(_connectionString)) 
             {
                 string sql = @"UPDATE appointments SET 
-date = @Date, duration = @Duration, master_id = @Master_id, 
-service_id = @Service_id, user_id = @User_id, 
-cancellation = @Cancellation 
-WHERE id = @Id";
+                               date = @Date, duration = @Duration, master_id = @Master_id, 
+                               service_id = @Service_id, user_id = @User_id, 
+                               cancellation = @Cancellation 
+                               WHERE id = @Id";
                 try 
                 { 
                     await con.OpenAsync();
