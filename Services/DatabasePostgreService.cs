@@ -6,10 +6,10 @@ using Npgsql;
 
 namespace ConsoleSchedule.Services
 {
-    internal class DatabasePostgreSQL
+    internal class DatabasePostgreService
     {
         private string _connString;
-        public DatabasePostgreSQL(string connectionString)
+        public DatabasePostgreService(string connectionString)
         {
             _connString = connectionString;
         }
@@ -199,7 +199,7 @@ namespace ConsoleSchedule.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error DatabasePostgreSQL, HasRecords(): " + ex.Message);
+                    Console.WriteLine("Error DatabasePostgreService, HasRecords(): " + ex.Message);
                     throw;
                 }
             }
@@ -212,7 +212,7 @@ namespace ConsoleSchedule.Services
             var users = new List<User>(await userRepo.GetAllUsers());
             if (!services.Any() || !users.Any())
             {
-                throw new InvalidOperationException("Error class DatabasePostgreSQL, CreateTestRecords: Empty List (services or users)");
+                throw new InvalidOperationException("Error class DatabasePostgreService, CreateTestRecords: Empty List (services or users)");
             }
 
             var appointments = new List<Appointment>();

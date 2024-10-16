@@ -1,5 +1,4 @@
 ﻿
-
 namespace ConsoleSchedule.Models
 {
     public class User

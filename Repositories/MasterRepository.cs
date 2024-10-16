@@ -18,8 +18,8 @@ namespace ConsoleSchedule.Repositories
         {
             using (var con = new NpgsqlConnection(_connString))
             {
-                var query = @"INSERT INTO masters (name, day_interval, start_day_time, end_day_time, speciality) 
-                              VALUES (@Name, @Day_interval, @Start_Day_Time, @End_Day_Time, @Speciality)";
+                var query = @"INSERT INTO masters (name, start_day_time, end_day_time, day_interval, speciality) 
+                              VALUES (@Name, @Start_day_time, @End_day_time, @Day_interval, @Speciality)";
                 try
                 {
                     await con.OpenAsync();

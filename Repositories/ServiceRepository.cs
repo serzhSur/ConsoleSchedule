@@ -3,7 +3,6 @@ using Npgsql;
 using Dapper;
 
 
-
 namespace ConsoleSchedule.Repositories
 {
     internal class ServiceRepository

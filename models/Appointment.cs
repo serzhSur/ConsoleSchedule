@@ -1,6 +1,5 @@
 ﻿using ConsoleSchedule.Models;
 
-
 namespace ConsoleSchedule
 {
     internal class Appointment

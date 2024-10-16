@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ConsoleSchedule.Models;
-using ConsoleSchedule.Repositories;
+﻿using ConsoleSchedule.Repositories;
 
 namespace ConsoleSchedule.Services
 {
