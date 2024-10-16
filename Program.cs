@@ -35,40 +35,13 @@ try
     // вывод расписания для user
     var scheduleService = new ScheduleService(appointmentService);
     var schedule= await scheduleService.CreateScheduleForUser(master);
-    Console.WriteLine("View for User");
-    Console.WriteLine($"{"StartTime", 8}{"EndTime",10}{"Status",8}");
-    Console.WriteLine(new string('-',30));
-    foreach (var i in schedule) 
-    {
-        Console.WriteLine($"{i.start.ToString(@"hh\:mm"), 8} -- {i.end.ToString(@"hh\:mm"),-8}{i.status,5}");
-    }
+    scheduleService.ShowScheduleForUser(schedule);
 
-    
+
 
     //Вывод расписания для Master
-    var appointmentDetailsRepository = new AppointmentDetailsRepository(connectionString);
-    var appointmentDetails = new List<AppointmentDetails>(appointmentDetailsRepository.GetAll(master));
-    
-    var filteredAppointments = appointmentDetails.Where(a=> a.Cancellation==false)
-        .OrderBy(a=> a.Date)
-        .ToList();
-    Console.WriteLine($"Appointments to Master: {filteredAppointments.Count}");
-    Console.WriteLine($"{"Id",-5}{"Date",-25}{"End Time",-10}{"Duration",-10}{"Service Name",-20}{"Master Name",-20}{"User Name",-20}{"User Phone",-15}{"Cancellation",-10}");
-    Console.WriteLine(new string('-', 120)+"\n"); // Разделитель
-    foreach (var a in filteredAppointments)
-    {
-        a.ShowConsole(a);
-    }
-    //вывод отмененных записей
-    var cancelAppointments = appointmentDetails.Where(a=> a.Cancellation==true)
-        .OrderBy(a=> a.Date)
-        .ToList();
-    Console.WriteLine($"Cancel Appointments: {cancelAppointments.Count}");
-    foreach (var a in cancelAppointments)
-    {
-        a.ShowConsole(a);
-    }
-    
+    var appointmentDetailRepository = new AppointmentDetailsRepository(connectionString);
+    scheduleService.ShowScheduleDatail(await scheduleService.CreateScheduleForMaster(appointmentDetailRepository, master));
 }
 
 catch (Exception ex) 

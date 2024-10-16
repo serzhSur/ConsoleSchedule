@@ -13,7 +13,7 @@ namespace ConsoleSchedule.Repositories
             _connectionString = connectionString;
         }
 
-        public IEnumerable<AppointmentDetails> GetAll(Master master) 
+        public async Task <IEnumerable<AppointmentDetails>> GetAll(Master master) 
         {
             using (var con = new NpgsqlConnection(_connectionString)) 
             {
@@ -40,8 +40,8 @@ namespace ConsoleSchedule.Repositories
                     users u ON a.user_id = u.id
                 WHERE a.master_id = @id
                 ORDER BY a.date ASC";
-                    con.Open();
-                    return con.Query<AppointmentDetails>(query, new { id = masterId});
+                    await con.OpenAsync();
+                    return await con.QueryAsync<AppointmentDetails>(query, new { id = masterId});
                 }
                 catch (Exception ex) 
                 { 
