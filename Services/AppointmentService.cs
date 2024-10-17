@@ -44,7 +44,7 @@ namespace ConsoleSchedule.Services
                 
                 if (timeOccupited)
                 {
-                    Console.WriteLine($"Appointment {appointment.Date} can't be made: Time interval is busy ");
+                    Console.WriteLine($"Appointment on: {appointment.Date.TimeOfDay} Can't be made: Time interval is busy ");
                 }
                 else 
                 {

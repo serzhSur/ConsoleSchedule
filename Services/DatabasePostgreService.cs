@@ -125,7 +125,7 @@ namespace ConsoleSchedule.Services
 
             }
         }
-        public async Task CreateTestRecords()
+        public async Task CreateTestRecords(DateTime date)
         {
             var masterRepo = new MasterRepository(_connString);
             var serviceRepo = new ServiceRepository(_connString);
@@ -181,8 +181,8 @@ namespace ConsoleSchedule.Services
             hasRecords = await HasRecords("appointments");
             if (hasRecords == false)
             {
-                await CreateAppointmentTestRecords(new DateTime(2024, 10, 14, 10, 0, 0), 1, masterRepo, serviceRepo, userRepo, appRepo);
-                await CreateAppointmentTestRecords(new DateTime(2024, 10, 14, 9, 0, 0), 2, masterRepo, serviceRepo, userRepo, appRepo);
+                await CreateAppointmentTestRecords(date, 1, masterRepo, serviceRepo, userRepo, appRepo);
+                await CreateAppointmentTestRecords(date, 2, masterRepo, serviceRepo, userRepo, appRepo);
             }
         }
 
