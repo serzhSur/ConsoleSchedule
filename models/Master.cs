@@ -1,6 +1,4 @@
 ﻿
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace ConsoleSchedule.Models
 {
     internal class  Master
@@ -11,7 +9,6 @@ namespace ConsoleSchedule.Models
         public TimeSpan Day_interval { get; set; } 
         public TimeSpan Start_day_time { get; set; }=new TimeSpan(6,00,0);    
         public TimeSpan End_day_time { get; set; }=new TimeSpan(22,00,0);
-
         public Master() { }
         public Master(string name,string speciality, TimeSpan dayInterval, TimeSpan startDayTime, TimeSpan endDayTime) 
         { 

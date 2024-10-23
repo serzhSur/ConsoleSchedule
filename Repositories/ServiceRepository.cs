@@ -29,10 +29,8 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
-
         public async Task<IEnumerable<Service>> GetMasterServices(Master master)
         {
-            //int masterId = master.Id;
             using (var con = new NpgsqlConnection(_connectionString))
             {
                 string query = @"Select * FROM services WHERE master_id = @Id";

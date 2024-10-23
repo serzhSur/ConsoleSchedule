@@ -7,12 +7,10 @@ namespace ConsoleSchedule.Repositories
     internal class AppointmentDetailsRepository
     {
         public string _connectionString;
-
         public AppointmentDetailsRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
-
         public async Task <IEnumerable<AppointmentDetails>> GetAll(Master master) 
         {
             using (var con = new NpgsqlConnection(_connectionString)) 
@@ -48,9 +46,7 @@ namespace ConsoleSchedule.Repositories
                     Console.WriteLine("ERROR class AppointmentDetailsRepository, GetAll() " + ex.Message);
                 }
                 return Enumerable.Empty<AppointmentDetails>();
-                
             }
         }
-
     }
 }

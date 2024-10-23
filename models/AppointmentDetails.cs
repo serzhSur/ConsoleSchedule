@@ -9,7 +9,5 @@ namespace ConsoleSchedule.Models
         public TimeSpan EndTime { get; set; }
         public string UserName {  get; set; }
         public string UserPhone {  get; set; }
-
-    }
-    
+    } 
 }

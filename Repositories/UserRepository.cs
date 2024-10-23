@@ -2,7 +2,6 @@
 using Npgsql;
 using Dapper;
 
-
 namespace ConsoleSchedule.Repositories
 {
     internal class UserRepository
@@ -12,7 +11,6 @@ namespace ConsoleSchedule.Repositories
         {
             _connectionString = connectionString;
         }
-
         public async Task AddUser(User user)
         {
             if (user == null)
@@ -31,11 +29,10 @@ namespace ConsoleSchedule.Repositories
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    throw; // Это позволит вызывающему коду узнать о возникшей ошибке
+                    throw; 
                 }
             }
         }
-
         public async Task<User> GetUserById(int id)
         {
             using (var con = new NpgsqlConnection(_connectionString))
@@ -53,13 +50,11 @@ namespace ConsoleSchedule.Repositories
                 }
                 catch (Exception ex)
                 {
-                    // Логирование исключения
                     Console.WriteLine("ERROR UserRepository, GetUserById: " + ex.Message);
-                    throw;// Повторно выбрасываем исключение для дальнейшей обработки
+                    throw;
                 }
             }
         }
-
         public async Task<IEnumerable<User>> GetAllUsers() 
         {
             using (var con = new NpgsqlConnection(_connectionString))
@@ -72,9 +67,8 @@ namespace ConsoleSchedule.Repositories
                 }
                 catch (Exception ex)
                 {
-                    // Логирование исключения
                     Console.WriteLine("ERROR UserRepository, GetAllUsers(): " + ex.Message);
-                    throw;// Повторно выбрасываем исключение для дальнейшей обработки
+                    throw;
                 }
             }
         }

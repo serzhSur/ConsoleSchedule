@@ -17,5 +17,4 @@ namespace ConsoleSchedule.Models
             Master_id = master.Id;
         }
     }
-
 }

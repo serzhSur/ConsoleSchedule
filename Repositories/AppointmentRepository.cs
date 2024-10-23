@@ -1,13 +1,11 @@
 ﻿using Npgsql;
 using Dapper;
 
-
 namespace ConsoleSchedule.Repositories
 {
     internal class AppointmentRepository
     {
         private string _connectionString;
-
         public AppointmentRepository(string connectionString)
         {
             _connectionString = connectionString;
@@ -30,7 +28,6 @@ namespace ConsoleSchedule.Repositories
                 } 
             }
         }
-
         public async Task<Appointment> GetAppointmentById(int id) 
         {
             using (var con = new NpgsqlConnection(_connectionString)) 
@@ -71,8 +68,6 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
-
-
         public async Task DeleteAppointmentByDate(Appointment appointment)
         {
             using (var con = new NpgsqlConnection(_connectionString))
@@ -93,7 +88,6 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
-
         public async Task UpdateAppointment(Appointment appointment) 
         {
             using (var con = new NpgsqlConnection(_connectionString)) 
@@ -115,8 +109,5 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
-
-        
-
     }
 }

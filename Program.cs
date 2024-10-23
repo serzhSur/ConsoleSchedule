@@ -14,9 +14,10 @@ try
     do
     {
         await handler.Start();
-        Console.WriteLine("Для выхода введите: 2");
+        Console.WriteLine("\nДля выхода введите: 2");
         string input = Console.ReadLine();
         exit = (input == "2");
+        Console.Clear();
     }
     while (!exit);
 }

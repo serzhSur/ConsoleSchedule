@@ -11,7 +11,6 @@ namespace ConsoleSchedule
         public int Service_id { get; set; }
         public int User_id { get; set; }
         public bool Cancellation { get; set; } = false;
-
         public Appointment() { }
         public Appointment(DateTime dateTime, Master master, Service service, User user)
         {
@@ -21,6 +20,5 @@ namespace ConsoleSchedule
             Service_id = service.Id;
             User_id = user.Id;
         }
-
     }
 }

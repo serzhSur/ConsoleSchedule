@@ -2,14 +2,11 @@
 using Dapper;
 using ConsoleSchedule.Models;
 
-
 namespace ConsoleSchedule.Repositories
 {
     internal class MasterRepository
     {
-
         private string _connString;
-
         public MasterRepository(string connString)
         {
             _connString = connString;
@@ -53,7 +50,6 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
-
         public async Task<IEnumerable<Master>> GetAllMasters()
         {
             using (var con = new NpgsqlConnection(_connString))
@@ -72,6 +68,5 @@ namespace ConsoleSchedule.Repositories
                 }
             }
         }
-
     }
 }
