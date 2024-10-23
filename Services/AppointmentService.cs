@@ -5,12 +5,10 @@ namespace ConsoleSchedule.Services
     internal class AppointmentService
     {
         private AppointmentRepository _repository;
-
         public AppointmentService(AppointmentRepository appointmentRepository)
         {
             _repository = appointmentRepository;
         }
-
         public async Task<List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime(int masterId)
         {
             List<Appointment> appointments = await _repository.GetAllAppointments(masterId);
@@ -25,7 +23,6 @@ namespace ConsoleSchedule.Services
                 }).ToList();
             return busyTime;
         }
-
         public async Task MakeAppointment(Appointment appointment)
         {
             if (appointment == null || appointment.User_id <= 0)
@@ -40,8 +37,7 @@ namespace ConsoleSchedule.Services
                 var newTimeStart = appointment.Date.TimeOfDay;
                 var newTimeEnd = appointment.Date.TimeOfDay + appointment.Duration;
 
-                bool timeOccupited = busyTime.Any(busy => newTimeStart < busy.end && newTimeEnd > busy.start);
-                
+                bool timeOccupited = busyTime.Any(busy => newTimeStart < busy.end && newTimeEnd > busy.start); 
                 if (timeOccupited)
                 {
                     Console.WriteLine($"Appointment on: {appointment.Date.TimeOfDay} Can't be made: Time interval is busy ");
@@ -51,9 +47,7 @@ namespace ConsoleSchedule.Services
                     await _repository.InsertAppointment(appointment);
                     Console.WriteLine($"Appointment Date: {appointment.Date} is Created");
                 }
-
             }
-
         }
         public async Task CancelAppointmentById(int id)
         {
@@ -63,8 +57,5 @@ namespace ConsoleSchedule.Services
 
             await _repository.UpdateAppointment(appointment);
         }
-
-
     }
-
 }

@@ -3,7 +3,6 @@ using ConsoleSchedule.Repositories;
 using Dapper;
 using Npgsql;
 
-
 namespace ConsoleSchedule.Services
 {
     internal class DatabasePostgreService
@@ -13,7 +12,6 @@ namespace ConsoleSchedule.Services
         {
             _connString = connectionString;
         }
-
         public async Task CreateDataBase(string postgresConnection, string dbName)
         {
             using (var conn = new NpgsqlConnection(postgresConnection))
@@ -44,7 +42,6 @@ namespace ConsoleSchedule.Services
                 }
             }
         }
-
         public async Task CreateTables()
         {
             using (var conn = new NpgsqlConnection(_connString))
@@ -185,7 +182,6 @@ namespace ConsoleSchedule.Services
                 await CreateAppointmentTestRecords(date, 2, masterRepo, serviceRepo, userRepo, appRepo);
             }
         }
-
         private async Task<bool> HasRecords(string tableName)
         {
             using (var con = new NpgsqlConnection(_connString))

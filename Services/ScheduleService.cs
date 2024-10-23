@@ -7,7 +7,6 @@ namespace ConsoleSchedule.Services
     {
         private AppointmentService _appointmentService;
         private AppointmentDetailsRepository _appDetailsRepo;
-
         public ScheduleService(AppointmentService appointmentService, AppointmentDetailsRepository appDetailsRepo) 
         { 
             _appointmentService = appointmentService;
@@ -62,6 +61,5 @@ namespace ConsoleSchedule.Services
                  $"{a.ServiceName,-20}{a.MasterName,-15}{a.UserName,-15}{a.UserPhone,-15}{a.Cancellation,-10}");
             }
         }
-
     }
 }
