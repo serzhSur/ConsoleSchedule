@@ -4,9 +4,7 @@ string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Dat
 try
 {
     var dataBase = new DatabasePostgreService(connectionString);
-    await dataBase.CreateDataBase("Host=localhost;Username=postgres;Password=Sur999", "schedule_test");
-    await dataBase.CreateTables();
-    await dataBase.CreateTestRecords(new DateTime(2024, 10, 14, 10, 0, 0));
+    await dataBase.InitializeDatabase("Host=localhost;Username=postgres;Password=Sur999", "schedule_test", new DateTime(2024, 10, 14, 10, 0, 0));
 
     var handler = new InputOutputHandler(connectionString);
     await handler.Start();

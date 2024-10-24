@@ -55,7 +55,7 @@ namespace ConsoleSchedule.Services
                 //Вывод расписания для Master
                 scheduleService.ShowScheduleDatail(await scheduleService.CreateScheduleForMaster(master));
 
-                Console.Write($"To make an appointment {user4.Name} with {master.Name} Enter command (hh:mm serviceId)\nto escape enter: ex ");
+                Console.Write($"To make an appointment {user4.Name} with {master.Name} Enter command: (hh:mm serviceId)\nto escape enter: (ex) ");
                 string input = Console.ReadLine();
                 exit = (input == "ex");
                 if (exit == false) 
