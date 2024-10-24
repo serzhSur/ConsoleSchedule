@@ -15,11 +15,12 @@ catch (Exception ex)
 {
     Console.WriteLine("APPLICATION ERROR: \n" + ex.Message + ex.StackTrace);
 }
-finally
+finally 
 {
-    Console.WriteLine("finish.");
+    Console.WriteLine("APPLICATION FINISH.");
     Console.ReadKey();
 }
+
 
 
 
