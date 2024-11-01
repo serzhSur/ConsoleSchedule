@@ -35,7 +35,7 @@ namespace ConsoleSchedule.Services
         }
         public void ShowScheduleForUser(List<(TimeSpan start, TimeSpan end, string status)> schedule) 
         {
-            Console.WriteLine("View for User");
+            Console.WriteLine("\nView for User");
             Console.WriteLine($"{"StartTime",8}{"EndTime",10}{"Status",8}");
             Console.WriteLine(new string('-', 30));
             foreach (var i in schedule)
@@ -51,7 +51,7 @@ namespace ConsoleSchedule.Services
         }
         public void ShowScheduleDatail(List<AppointmentDetails> appointmentDetail) 
         {
-            Console.WriteLine($"Appointments to Master: {appointmentDetail.Count}");
+            Console.WriteLine($"\nAppointments to Master: {appointmentDetail.Count}");
             Console.WriteLine($"{"Id",-5}{"Date",-25}{"End Time",-10}{"Duration",-10}{"Service Name",-20}" +
                 $"{"Master Name",-15}{"User Name",-15}{"User Phone",-15}{"Cancellation",-10}");
             Console.WriteLine(new string('-', 127)); 

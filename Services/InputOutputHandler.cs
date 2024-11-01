@@ -40,9 +40,9 @@ namespace ConsoleSchedule.Services
             bool exit = false;
             while (exit == false)
             {
-                // вывод услуг master
+                // вывод master и его услуг 
                 Console.WriteLine($"Master id: {master.Id}\tName: {master.Name}\tSpeciality: {master.Speciality}" +
-                              $"\tdayInterval: {master.Day_interval}");
+                              $"\tdayInterval: {master.Day_interval}\n");
                 foreach (var s in services)
                 {
                     Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
@@ -58,20 +58,39 @@ namespace ConsoleSchedule.Services
                 scheduleService.ShowScheduleDatail(await scheduleService.CreateScheduleForMaster(master));
 
 
-               
-                Console.WriteLine($"Rezalt: {Output}");
-                Console.Write($"To make an appointment {user4.Name} with {master.Name} Enter command: (hh:mm serviceId)\nto escape enter: (ex) ");
+                Console.WriteLine($"\nRezalt: {Output}");
+                Console.Write($"\nTo make an appointment {user4.Name} with {master.Name} Enter command: (hh+mm+serviceId)\nto escape enter: (ex) ");
+
                 string input = Console.ReadLine();
-                Output = input;//это тест, здесь вывод результата команды в консоль
                 exit = (input == "ex");
                 if (exit == false)
                 {
-                    //выполняем команду
-                    //int timeH = Convert.ToInt16("9");
-                    //int timeM = Convert.ToInt16("15");
-                    //var date = new DateTime(2024, 10, 14, timeH, timeM, 0);
-                    //int serviceId = 5;
-                    //Appointment appointment2 = new Appointment(date, master, service, user4);
+                    // обработка ввода и выполнение команды
+                    //18+0+5
+                    try
+                    {
+                        string[] companents = input.Split('+');
+
+                        int timeH = int.Parse(companents[0]);
+                        int timeM = int.Parse(companents[1]);
+                        int serviceId = int.Parse(companents[2]);
+
+                        var date = new DateTime(2024, 10, 14, timeH, timeM, 0);
+                        Service selectedService = services.FirstOrDefault(s => s.Id == serviceId);
+
+
+                        if (selectedService != null)
+                        {
+                            Appointment appointment2 = new Appointment(date, master, selectedService, user4);
+                            await appointmentService.MakeAppointment(appointment2);
+                            Output = $"Done {input}";
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Output = "Incorrect Command"+ex.Message;
+                    }
                 }
                 Console.Clear();
             }
