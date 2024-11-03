@@ -5,10 +5,10 @@ using Npgsql;
 
 namespace VizitConsole.Services
 {
-    internal class DatabasePostgreService
+    internal class DatabaseSetup
     {
         private string _connString;
-        public DatabasePostgreService(string connectionString)
+        public DatabaseSetup(string connectionString)
         {
             _connString = connectionString;
         }
@@ -201,7 +201,7 @@ namespace VizitConsole.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error DatabasePostgreService, HasRecords(): " + ex.Message);
+                    Console.WriteLine("Error DatabaseSetup, HasRecords(): " + ex.Message);
                     throw;
                 }
             }
@@ -214,7 +214,7 @@ namespace VizitConsole.Services
             var users = new List<User>(await userRepo.GetAllUsers());
             if (!services.Any() || !users.Any())
             {
-                throw new InvalidOperationException("Error class DatabasePostgreService, CreateTestRecords: Empty List (services or users)");
+                throw new InvalidOperationException("Error class DatabaseSetup, CreateTestRecords: Empty List (services or users)");
             }
 
             var appointments = new List<Appointment>();
