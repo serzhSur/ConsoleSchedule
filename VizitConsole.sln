@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisitConsole", "VisitConsole.csproj", "{4EC64FB0-D909-47D6-9E67-AC9B949EC70F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VizitConsole", "VizitConsole.csproj", "{4EC64FB0-D909-47D6-9E67-AC9B949EC70F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

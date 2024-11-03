@@ -1,4 +1,4 @@
-﻿using ConsoleSchedule.Services;
+﻿using VizitConsole.Services;
 
 string connectionString = "Host=localhost;Username=postgres;Password=Sur999; Database=schedule_test";
 try
