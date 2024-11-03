@@ -1,9 +1,9 @@
-﻿using ConsoleSchedule.Models;
-using ConsoleSchedule.Repositories;
+﻿using VizitConsole.Models;
+using VizitConsole.Repositories;
 using Dapper;
 using Npgsql;
 
-namespace ConsoleSchedule.Services
+namespace VizitConsole.Services
 {
     internal class DatabasePostgreService
     {

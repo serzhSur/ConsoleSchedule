@@ -1,6 +1,6 @@
-﻿using ConsoleSchedule.Repositories;
+﻿using VizitConsole.Repositories;
 
-namespace ConsoleSchedule.Services
+namespace VizitConsole.Services
 {
     internal class AppointmentService
     {

@@ -1,7 +1,7 @@
 ﻿using Npgsql;
 using Dapper;
 
-namespace ConsoleSchedule.Repositories
+namespace VizitConsole.Repositories
 {
     internal class AppointmentRepository
     {

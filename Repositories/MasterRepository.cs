@@ -1,8 +1,8 @@
 ﻿using Npgsql;
 using Dapper;
-using ConsoleSchedule.Models;
+using VizitConsole.Models;
 
-namespace ConsoleSchedule.Repositories
+namespace VizitConsole.Repositories
 {
     internal class MasterRepository
     {

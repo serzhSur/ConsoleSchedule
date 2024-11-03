@@ -1,8 +1,8 @@
-﻿using ConsoleSchedule.Models;
+﻿using VizitConsole.Models;
 using Dapper;
 using Npgsql;
 
-namespace ConsoleSchedule.Repositories
+namespace VizitConsole.Repositories
 {
     internal class AppointmentDetailsRepository
     {

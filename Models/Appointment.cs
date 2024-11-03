@@ -1,6 +1,6 @@
-﻿using ConsoleSchedule.Models;
+﻿using VizitConsole.Models;
 
-namespace ConsoleSchedule
+namespace VizitConsole
 {
     internal class Appointment
     {

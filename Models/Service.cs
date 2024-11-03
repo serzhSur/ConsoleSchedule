@@ -1,5 +1,5 @@
 ﻿
-namespace ConsoleSchedule.Models
+namespace VizitConsole.Models
 {
     internal class Service
     {

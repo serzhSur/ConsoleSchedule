@@ -1,9 +1,9 @@
-﻿using ConsoleSchedule.Models;
+﻿using VizitConsole.Models;
 using Npgsql;
 using Dapper;
 
 
-namespace ConsoleSchedule.Repositories
+namespace VizitConsole.Repositories
 {
     internal class ServiceRepository
     {

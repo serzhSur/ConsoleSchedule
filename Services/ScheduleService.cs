@@ -1,7 +1,7 @@
-﻿using ConsoleSchedule.Models;
-using ConsoleSchedule.Repositories;
+﻿using VizitConsole.Models;
+using VizitConsole.Repositories;
 
-namespace ConsoleSchedule.Services
+namespace VizitConsole.Services
 {
     internal class ScheduleService
     {
