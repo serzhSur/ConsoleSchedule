@@ -14,9 +14,9 @@ namespace ConsoleSchedule.Services
         }
         public async Task InitializeDatabase(string dbConString, string dbName, DateTime testRecordsDate) 
         {
-            await CreateDataBase(dbConString, dbName);//"Host=localhost;Username=postgres;Password=Sur999", dbName);
+            await CreateDataBase(dbConString, dbName);
             await CreateTables();
-            await CreateTestRecords(testRecordsDate);//new DateTime(2024, 10, 14, 10, 0, 0));
+            await CreateTestRecords(testRecordsDate);
         }
         public async Task CreateDataBase(string postgresConnection, string dbName)
         {
