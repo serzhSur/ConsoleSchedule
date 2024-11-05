@@ -5,9 +5,12 @@ namespace VizitConsole.Services
     internal class AppointmentService
     {
         private AppointmentRepository _repository;
-        public AppointmentService(AppointmentRepository appointmentRepository)
+        private string connString;
+        public string? Message { get; set; }
+        public AppointmentService(string connectionString)
         {
-            _repository = appointmentRepository;
+            connString = connectionString;
+            _repository = new AppointmentRepository(connectionString);
         }
         public async Task<List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime(int masterId)
         {
@@ -37,15 +40,15 @@ namespace VizitConsole.Services
                 var newTimeStart = appointment.Date.TimeOfDay;
                 var newTimeEnd = appointment.Date.TimeOfDay + appointment.Duration;
 
-                bool timeOccupited = busyTime.Any(busy => newTimeStart < busy.end && newTimeEnd > busy.start); 
+                bool timeOccupited = busyTime.Any(busy => newTimeStart < busy.end && newTimeEnd > busy.start);
                 if (timeOccupited)
                 {
-                    Console.WriteLine($"Appointment on: {appointment.Date.TimeOfDay} Can't be made: Time interval is busy ");
+                    Message = $"Appointment on: {appointment.Date.TimeOfDay} Can't be made: Time interval is busy ";
                 }
-                else 
+                else
                 {
                     await _repository.InsertAppointment(appointment);
-                    Console.WriteLine($"Appointment Date: {appointment.Date} is Created");
+                    Message = $"Appointment Date: {appointment.Date} is Created";
                 }
             }
         }

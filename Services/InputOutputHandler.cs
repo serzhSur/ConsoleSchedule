@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Metrics;
+﻿
 using VizitConsole.Models;
 using VizitConsole.Repositories;
 
@@ -6,15 +6,13 @@ namespace VizitConsole.Services
 {
     internal class InputOutputHandler
     {
-        AppointmentRepository _appointmentRepo;
-        AppointmentService _appointmentService;
-        string connectionString { get; set; }
-        private string Output;
+        private AppointmentService _appointmentService;
+        private string? Output;
+        private string connectionString { get; set; }
         public InputOutputHandler(string connectionString)
         {
             this.connectionString = connectionString;
-            _appointmentRepo = new AppointmentRepository(connectionString);
-            _appointmentService = new AppointmentService(_appointmentRepo);
+            _appointmentService = new AppointmentService(connectionString);
         }
 
         public async Task Start()
@@ -26,7 +24,7 @@ namespace VizitConsole.Services
             var masterRepo = new MasterRepository(connectionString);
             Master master = await masterRepo.GetMasterById(2);
 
-            //получение списка сервисов(services) мастера и конкретного сервиса(service)
+            //получение списка сервисов(services) мастера 
             var serviceRepository = new ServiceRepository(connectionString);
             var services = new List<Service>(await serviceRepository.GetMasterServices(master));
 
@@ -72,12 +70,11 @@ namespace VizitConsole.Services
                             Output = "Unknown Command";
                             break;
                     }
-
                 }
                 Console.Clear();
             }
         }
-        async Task AddCommand(string[] command, Master master, List<Service> masterServices, User user)
+        private async Task AddCommand(string[] command, Master master, List<Service> masterServices, User user)
         {
             try
             {
@@ -93,7 +90,7 @@ namespace VizitConsole.Services
                 {
                     Appointment appointment2 = new Appointment(date, master, selectedService, user);
                     await _appointmentService.MakeAppointment(appointment2);
-                    Output = $"Done {command}";
+                    Output = _appointmentService.Message;
                 }
             }
             catch (Exception ex)
