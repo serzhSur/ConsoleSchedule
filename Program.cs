@@ -16,7 +16,6 @@ catch (Exception ex)
 finally 
 {
     Console.WriteLine("APPLICATION FINISH.");
-    Console.ReadKey();
 }
 
 

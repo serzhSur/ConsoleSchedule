@@ -1,15 +1,20 @@
-﻿using VizitConsole.Models;
+﻿using System.Diagnostics.Metrics;
+using VizitConsole.Models;
 using VizitConsole.Repositories;
 
 namespace VizitConsole.Services
 {
     internal class InputOutputHandler
     {
+        AppointmentRepository _appointmentRepo;
+        AppointmentService _appointmentService;
         string connectionString { get; set; }
         private string Output;
         public InputOutputHandler(string connectionString)
         {
             this.connectionString = connectionString;
+            _appointmentRepo = new AppointmentRepository(connectionString);
+            _appointmentService = new AppointmentService(_appointmentRepo);
         }
 
         public async Task Start()
@@ -24,19 +29,8 @@ namespace VizitConsole.Services
             //получение списка сервисов(services) мастера и конкретного сервиса(service)
             var serviceRepository = new ServiceRepository(connectionString);
             var services = new List<Service>(await serviceRepository.GetMasterServices(master));
-            Service service = services.FirstOrDefault(s => s.Name == "hair-coloring");
 
-            //отмена записи к мастеру и создание другой записи
-            var appointmentRepo = new AppointmentRepository(connectionString);
-            var appointmentService = new AppointmentService(appointmentRepo);
-            await appointmentService.CancelAppointmentById(6);
-            if (service == null)
-            {
-                throw new ArgumentException("Appointment's parametrs NOT Found", nameof(service));
-            }
-            Appointment appointment = new Appointment(new DateTime(2024, 10, 14, 12, 30, 0), master, service, user4);
-            await appointmentService.MakeAppointment(appointment);
-
+            //запуск в цикле интерфейса с расписанием и выполнением команд из командной строки
             bool exit = false;
             while (exit == false)
             {
@@ -48,54 +42,64 @@ namespace VizitConsole.Services
                     Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
                 }
 
-
                 // вывод расписания для user
                 var appDetailRepo = new AppointmentDetailsRepository(connectionString);
-                var scheduleService = new ScheduleService(appointmentService, appDetailRepo);
+                var scheduleService = new ScheduleService(_appointmentService, appDetailRepo);
                 scheduleService.ShowScheduleForUser(await scheduleService.CreateScheduleForUser(master));
 
                 //Вывод расписания для Master
                 scheduleService.ShowScheduleDatail(await scheduleService.CreateScheduleForMaster(master));
 
-
+                //вывод результата команды из командной строки 
                 Console.WriteLine($"\nRezalt: {Output}");
-                Console.Write($"\nTo make an appointment {user4.Name} with {master.Name} Enter command: (hh+mm+serviceId)\nto escape enter: (ex) ");
 
+                //ввод команд
+                Console.Write($"\nTo make an appointment {user4.Name} with {master.Name} Enter command: (add hh:mm serviceId)\nto escape enter: (ex) ");
                 string input = Console.ReadLine();
                 exit = (input == "ex");
                 if (exit == false)
                 {
-                    // обработка ввода и выполнение команды
-                    //18+0+5
-                    try
+                    // обработка ввода и выполнение команды (add 09:30 4)
+                    string[] commandParts = input.Split(' ');
+                    switch (commandParts[0].ToLower())
                     {
-                        string[] companents = input.Split('+');
-
-                        int timeH = int.Parse(companents[0]);
-                        int timeM = int.Parse(companents[1]);
-                        int serviceId = int.Parse(companents[2]);
-
-                        var date = new DateTime(2024, 10, 14, timeH, timeM, 0);
-                        Service selectedService = services.FirstOrDefault(s => s.Id == serviceId);
-
-
-                        if (selectedService != null)
-                        {
-                            Appointment appointment2 = new Appointment(date, master, selectedService, user4);
-                            await appointmentService.MakeAppointment(appointment2);
-                            Output = $"Done {input}";
-                        }
-
+                        case "add":
+                            await AddCommand(commandParts, master, services, user4);
+                            break;
+                        case "can":
+                            break;
+                        default:
+                            Output = "Unknown Command";
+                            break;
                     }
-                    catch (Exception ex)
-                    {
-                        Output = "Incorrect Command"+ex.Message;
-                    }
+
                 }
                 Console.Clear();
             }
-
         }
+        async Task AddCommand(string[] command, Master master, List<Service> masterServices, User user)
+        {
+            try
+            {
+                string[] time = command[1].Split(':');
+                int timeH = int.Parse(time[0]);
+                int timeM = int.Parse(time[1]);
+                int serviceId = int.Parse(command[2]);
 
+                var date = new DateTime(2024, 10, 14, timeH, timeM, 0);
+                Service selectedService = masterServices.FirstOrDefault(s => s.Id == serviceId);
+
+                if (selectedService != null)
+                {
+                    Appointment appointment2 = new Appointment(date, master, selectedService, user);
+                    await _appointmentService.MakeAppointment(appointment2);
+                    Output = $"Done {command}";
+                }
+            }
+            catch (Exception ex)
+            {
+                Output = "Incorrect Command" + ex.Message;
+            }
+        }
     }
 }
