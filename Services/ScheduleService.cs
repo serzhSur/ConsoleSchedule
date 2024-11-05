@@ -7,10 +7,10 @@ namespace VizitConsole.Services
     {
         private AppointmentService _appointmentService;
         private AppointmentDetailsRepository _appDetailsRepo;
-        public ScheduleService(AppointmentService appointmentService, AppointmentDetailsRepository appDetailsRepo) 
+        public ScheduleService(string connectionString) 
         { 
-            _appointmentService = appointmentService;
-            _appDetailsRepo = appDetailsRepo;
+            _appointmentService = new AppointmentService(connectionString);
+            _appDetailsRepo = new AppointmentDetailsRepository(connectionString);
         }
         public async Task< List<(TimeSpan start, TimeSpan end, string status)>> CreateScheduleForUser(Master master) 
         {

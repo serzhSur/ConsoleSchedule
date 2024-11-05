@@ -6,35 +6,36 @@ namespace VizitConsole.Services
 {
     internal class InputOutputHandler
     {
+        private UserRepository _userRepository;
+        private MasterRepository _masterRepository;
+        private ServiceRepository _serviceRepository;
         private AppointmentService _appointmentService;
+        private ScheduleService _scheduleService;
         private string? Output;
-        private string connectionString { get; set; }
+       
         public InputOutputHandler(string connectionString)
         {
-            this.connectionString = connectionString;
+            _userRepository = new UserRepository(connectionString);
+            _masterRepository = new MasterRepository(connectionString);
+            _serviceRepository = new ServiceRepository(connectionString);
             _appointmentService = new AppointmentService(connectionString);
+            _scheduleService = new ScheduleService(connectionString);
         }
 
-        public async Task Start()
+        public async Task Start(int userId, int masterId)
         {
-            //получение user
-            var userRopo = new UserRepository(connectionString);
-            User user4 = await userRopo.GetUserById(4);
-            //получение master
-            var masterRepo = new MasterRepository(connectionString);
-            List<Master> masters = new List<Master>(await masterRepo.GetAllMasters());
-            Master master = await masterRepo.GetMasterById(2);
+            User user4 = await _userRepository.GetUserById(userId);
 
-            //получение списка сервисов(services) мастера 
-            var serviceRepository = new ServiceRepository(connectionString);
-            var services = new List<Service>(await serviceRepository.GetMasterServices(master));
+            Master master = await _masterRepository.GetMasterById(masterId);
+            var services = new List<Service>(await _serviceRepository.GetMasterServices(master));
+            List<Master> masters = new List<Master>(await _masterRepository.GetAllMasters());
 
             //запуск в цикле интерфейса с расписанием и выполнением команд из командной строки
             bool exit = false;
             while (exit == false)
             {
                 // вывод master и его услуг 
-                foreach (var m in masters) 
+                foreach (var m in masters)
                 {
                     Console.WriteLine($"Master id: {m.Id}\tName: {m.Name}\tSpeciality: {m.Speciality}" +
                              $"\tdayInterval: {m.Day_interval}");
@@ -45,13 +46,11 @@ namespace VizitConsole.Services
                     Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
                 }
 
-                // вывод расписания для user
-                var appDetailRepo = new AppointmentDetailsRepository(connectionString);
-                var scheduleService = new ScheduleService(_appointmentService, appDetailRepo);
-                scheduleService.ShowScheduleForUser(await scheduleService.CreateScheduleForUser(master));
+                // вывод расписания для user;
+                _scheduleService.ShowScheduleForUser(await _scheduleService.CreateScheduleForUser(master));
 
                 //Вывод расписания для Master
-                scheduleService.ShowScheduleDatail(await scheduleService.CreateScheduleForMaster(master));
+                _scheduleService.ShowScheduleDatail(await _scheduleService.CreateScheduleForMaster(master));
 
                 //вывод результата команды из командной строки 
                 Console.WriteLine($"\nRezalt: {Output}");
@@ -73,7 +72,7 @@ namespace VizitConsole.Services
                             Output = "cancel appointment";
                             break;
                         case "master":
-                            Output = "master id 13";
+                            Output = "youre master is:";
                             break;
                         default:
                             Output = "Unknown Command";

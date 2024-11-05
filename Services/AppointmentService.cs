@@ -5,11 +5,9 @@ namespace VizitConsole.Services
     internal class AppointmentService
     {
         private AppointmentRepository _repository;
-        private string connString;
         public string? Message { get; set; }
         public AppointmentService(string connectionString)
         {
-            connString = connectionString;
             _repository = new AppointmentRepository(connectionString);
         }
         public async Task<List<(TimeSpan start, TimeSpan end, string status)>> GetBusyTime(int masterId)
