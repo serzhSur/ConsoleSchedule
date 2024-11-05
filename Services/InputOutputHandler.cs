@@ -22,6 +22,7 @@ namespace VizitConsole.Services
             User user4 = await userRopo.GetUserById(4);
             //получение master
             var masterRepo = new MasterRepository(connectionString);
+            List<Master> masters = new List<Master>(await masterRepo.GetAllMasters());
             Master master = await masterRepo.GetMasterById(2);
 
             //получение списка сервисов(services) мастера 
@@ -33,8 +34,12 @@ namespace VizitConsole.Services
             while (exit == false)
             {
                 // вывод master и его услуг 
-                Console.WriteLine($"Master id: {master.Id}\tName: {master.Name}\tSpeciality: {master.Speciality}" +
-                              $"\tdayInterval: {master.Day_interval}\n");
+                foreach (var m in masters) 
+                {
+                    Console.WriteLine($"Master id: {m.Id}\tName: {m.Name}\tSpeciality: {m.Speciality}" +
+                             $"\tdayInterval: {m.Day_interval}");
+                }
+                Console.WriteLine($"\nMaster {master.Name} Has {services.Count} services: ");
                 foreach (var s in services)
                 {
                     Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
@@ -65,6 +70,10 @@ namespace VizitConsole.Services
                             await AddCommand(commandParts, master, services, user4);
                             break;
                         case "can":
+                            Output = "cancel appointment";
+                            break;
+                        case "master":
+                            Output = "master id 13";
                             break;
                         default:
                             Output = "Unknown Command";
