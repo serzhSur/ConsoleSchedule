@@ -1,6 +1,4 @@
-﻿
-using System.Diagnostics.Metrics;
-using VizitConsole.Models;
+﻿using VizitConsole.Models;
 using VizitConsole.Repositories;
 
 namespace VizitConsole.Services
@@ -15,10 +13,6 @@ namespace VizitConsole.Services
         private string? Output;
         int _userId { get; set; } = 4;
         int _masterId { get; set; } = 1;
-        Master Master { get; set; }
-        User User { get; set; }
-        List<Service> Services { get; set; }
-
         public InputOutputHandler(string connectionString)
         {
             _userRepository = new UserRepository(connectionString);
@@ -27,64 +21,59 @@ namespace VizitConsole.Services
             _appointmentService = new AppointmentService(connectionString);
             _scheduleService = new ScheduleService(connectionString);
         }
-
         public async Task Start()
         {
-            User = await _userRepository.GetUserById(_userId);
-
+            User user = await _userRepository.GetUserById(_userId);
             Master master = await _masterRepository.GetMasterById(_masterId);
-            var services = new List<Service>(await _serviceRepository.GetMasterServices(Master));
+            var services = new List<Service>(await _serviceRepository.GetMasterServices(master));
             List<Master> masters = new List<Master>(await _masterRepository.GetAllMasters());
-            //запуск в цикле интерфейса с расписанием и выполнением команд из командной строки
+
             bool exit = false;
             while (exit == false)
             {
                 await DisplayData(master, masters, services);
-                string input = InputCommands();
+                string input = InputCommands(master, user);
                 exit = (input == "ex");
                 if (exit == false)
                 {
-                    await ExecuteCommand(input);
+                    await ExecuteCommands(input,master,services,user);
                 }
                 Console.Clear();
             }
         }
-        async Task DisplayData(Master master, List<Master> masters, List<Service> services)
+        private async Task DisplayData(Master master, List<Master> masters, List<Service> services)
         {
-            // вывод Master и его услуг 
-            
             foreach (var m in masters)
             {
                 Console.WriteLine($"Master id: {m.Id}\tName: {m.Name}\tSpeciality: {m.Speciality}" +
                          $"\tdayInterval: {m.Day_interval}");
             }
+            
             Console.WriteLine($"\nMaster {master.Name} Has {services.Count} Services: ");
+            
             foreach (var s in services)
             {
                 Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
             }
 
-            // вывод расписания для user;
             _scheduleService.ShowScheduleForUser(await _scheduleService.CreateScheduleForUser(master));
 
-            //Вывод расписания для Master
             _scheduleService.ShowScheduleDatail(await _scheduleService.CreateScheduleForMaster(master));
 
-            //вывод результата команды из командной строки 
             Console.WriteLine($"\nRezalt: {Output}");
         }
-        string InputCommands()
+        private string InputCommands(Master master, User user)
         {
-            Console.Write($"\nTo make an appointment {User.Name} with {Master.Name} Enter command: (add hh:mm serviceId)\nto escape enter: (ex) ");
+            Console.Write($"\nTo make an appointment {user.Name} with {master.Name} Enter command: (add hh:mm serviceId)\nto escape enter: (ex) ");
             return Console.ReadLine();
         }
-        async Task ExecuteCommand(string input)
+        private async Task ExecuteCommands(string input, Master master, List<Service> services, User user)
         {
             string[] commandParts = input.Split(' ');
             switch (commandParts[0].ToLower())
             {
                 case "add":
-                    await AddCommand(commandParts, Master, Services, User);
+                    await AddCommand(commandParts, master, services, user);
                     break;
                 case "can":
                     Output = "cancel appointment";
@@ -111,8 +100,8 @@ namespace VizitConsole.Services
 
                 if (selectedService != null)
                 {
-                    Appointment appointment2 = new Appointment(date, master, selectedService, user);
-                    await _appointmentService.MakeAppointment(appointment2);
+                    Appointment appointment = new Appointment(date, master, selectedService, user);
+                    await _appointmentService.MakeAppointment(appointment);
                     Output = _appointmentService.Message;
                 }
             }

@@ -11,11 +11,11 @@ try
 }
 catch (Exception ex)
 {
-    Console.WriteLine("APPLICATION ERROR: \n" + ex.Message + ex.StackTrace);
+    Console.WriteLine("Application Error: \n" + ex.Message + ex.StackTrace);
 }
 finally 
 {
-    Console.WriteLine("APPLICATION FINISH.");
+    Console.WriteLine("Application Finish.");
 }
 
 
