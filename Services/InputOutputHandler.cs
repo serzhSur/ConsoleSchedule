@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics.Metrics;
 using VizitConsole.Models;
 using VizitConsole.Repositories;
 
@@ -12,7 +13,12 @@ namespace VizitConsole.Services
         private AppointmentService _appointmentService;
         private ScheduleService _scheduleService;
         private string? Output;
-       
+        int _userId { get; set; } = 4;
+        int _masterId { get; set; } = 1;
+        Master Master { get; set; }
+        User User { get; set; }
+        List<Service> Services { get; set; }
+
         public InputOutputHandler(string connectionString)
         {
             _userRepository = new UserRepository(connectionString);
@@ -22,64 +28,73 @@ namespace VizitConsole.Services
             _scheduleService = new ScheduleService(connectionString);
         }
 
-        public async Task Start(int userId, int masterId)
+        public async Task Start()
         {
-            User user4 = await _userRepository.GetUserById(userId);
+            User = await _userRepository.GetUserById(_userId);
 
-            Master master = await _masterRepository.GetMasterById(masterId);
-            var services = new List<Service>(await _serviceRepository.GetMasterServices(master));
+            Master master = await _masterRepository.GetMasterById(_masterId);
+            var services = new List<Service>(await _serviceRepository.GetMasterServices(Master));
             List<Master> masters = new List<Master>(await _masterRepository.GetAllMasters());
-
             //запуск в цикле интерфейса с расписанием и выполнением команд из командной строки
             bool exit = false;
             while (exit == false)
             {
-                // вывод master и его услуг 
-                foreach (var m in masters)
-                {
-                    Console.WriteLine($"Master id: {m.Id}\tName: {m.Name}\tSpeciality: {m.Speciality}" +
-                             $"\tdayInterval: {m.Day_interval}");
-                }
-                Console.WriteLine($"\nMaster {master.Name} Has {services.Count} services: ");
-                foreach (var s in services)
-                {
-                    Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
-                }
-
-                // вывод расписания для user;
-                _scheduleService.ShowScheduleForUser(await _scheduleService.CreateScheduleForUser(master));
-
-                //Вывод расписания для Master
-                _scheduleService.ShowScheduleDatail(await _scheduleService.CreateScheduleForMaster(master));
-
-                //вывод результата команды из командной строки 
-                Console.WriteLine($"\nRezalt: {Output}");
-
-                //ввод команд
-                Console.Write($"\nTo make an appointment {user4.Name} with {master.Name} Enter command: (add hh:mm serviceId)\nto escape enter: (ex) ");
-                string input = Console.ReadLine();
+                await DisplayData(master, masters, services);
+                string input = InputCommands();
                 exit = (input == "ex");
                 if (exit == false)
                 {
-                    // обработка ввода и выполнение команды (add 09:30 4)
-                    string[] commandParts = input.Split(' ');
-                    switch (commandParts[0].ToLower())
-                    {
-                        case "add":
-                            await AddCommand(commandParts, master, services, user4);
-                            break;
-                        case "can":
-                            Output = "cancel appointment";
-                            break;
-                        case "master":
-                            Output = "youre master is:";
-                            break;
-                        default:
-                            Output = "Unknown Command";
-                            break;
-                    }
+                    await ExecuteCommand(input);
                 }
                 Console.Clear();
+            }
+        }
+        async Task DisplayData(Master master, List<Master> masters, List<Service> services)
+        {
+            // вывод Master и его услуг 
+            
+            foreach (var m in masters)
+            {
+                Console.WriteLine($"Master id: {m.Id}\tName: {m.Name}\tSpeciality: {m.Speciality}" +
+                         $"\tdayInterval: {m.Day_interval}");
+            }
+            Console.WriteLine($"\nMaster {master.Name} Has {services.Count} Services: ");
+            foreach (var s in services)
+            {
+                Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
+            }
+
+            // вывод расписания для user;
+            _scheduleService.ShowScheduleForUser(await _scheduleService.CreateScheduleForUser(master));
+
+            //Вывод расписания для Master
+            _scheduleService.ShowScheduleDatail(await _scheduleService.CreateScheduleForMaster(master));
+
+            //вывод результата команды из командной строки 
+            Console.WriteLine($"\nRezalt: {Output}");
+        }
+        string InputCommands()
+        {
+            Console.Write($"\nTo make an appointment {User.Name} with {Master.Name} Enter command: (add hh:mm serviceId)\nto escape enter: (ex) ");
+            return Console.ReadLine();
+        }
+        async Task ExecuteCommand(string input)
+        {
+            string[] commandParts = input.Split(' ');
+            switch (commandParts[0].ToLower())
+            {
+                case "add":
+                    await AddCommand(commandParts, Master, Services, User);
+                    break;
+                case "can":
+                    Output = "cancel appointment";
+                    break;
+                case "master":
+                    Output = "youre master is:";
+                    break;
+                default:
+                    Output = "Unknown Command";
+                    break;
             }
         }
         private async Task AddCommand(string[] command, Master master, List<Service> masterServices, User user)
