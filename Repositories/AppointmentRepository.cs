@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using Dapper;
+using VizitConsole.Models;
 
 namespace VizitConsole.Repositories
 {
@@ -25,27 +26,27 @@ namespace VizitConsole.Repositories
                 {
                     Console.WriteLine("Error class AppointmentRepository, InserAppointment: " + ex.Message);
                     throw;
-                } 
+                }
             }
         }
-        public async Task<Appointment> GetAppointmentById(int id) 
+        public async Task<Appointment> GetAppointment(int id)
         {
-            using (var con = new NpgsqlConnection(_connectionString)) 
+            using (var con = new NpgsqlConnection(_connectionString))
             {
                 string sql = @"SELECT * FROM appointments WHERE id = @Id";
-                try 
-                { 
+                try
+                {
                     await con.OpenAsync();
-                    var appointment= await con.QuerySingleOrDefaultAsync<Appointment>(sql, new {Id = id });
-                    if (appointment == null) 
+                    var appointment = await con.QuerySingleOrDefaultAsync<Appointment>(sql, new { Id = id });
+                    if (appointment == null)
                     {
                         throw new InvalidOperationException($"Appointment id:{id} Not Found");
                     }
                     return appointment;
                 }
-                catch (Exception ex) 
-                { 
-                    Console.WriteLine("Error class AppointmentRepository, GetAppointmentById "+ex.Message);
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error class AppointmentRepository, GetAppointment " + ex.Message);
                     throw;
                 }
             }
@@ -58,7 +59,7 @@ namespace VizitConsole.Repositories
                 try
                 {
                     await con.OpenAsync();
-                    var appointments = await con.QueryAsync<Appointment>(query, new { Cancel=false, Id= masterId });
+                    var appointments = await con.QueryAsync<Appointment>(query, new { Cancel = false, Id = masterId });
                     return appointments.ToList();
                 }
                 catch (Exception ex)
@@ -88,25 +89,39 @@ namespace VizitConsole.Repositories
                 }
             }
         }
-        public async Task UpdateAppointment(Appointment appointment) 
+        public async Task UpdateAppointment(Appointment appointment)
         {
-            using (var con = new NpgsqlConnection(_connectionString)) 
+            using (var con = new NpgsqlConnection(_connectionString))
             {
                 string sql = @"UPDATE appointments SET 
                                date = @Date, duration = @Duration, master_id = @Master_id, 
                                service_id = @Service_id, user_id = @User_id, 
                                cancellation = @Cancellation 
                                WHERE id = @Id";
-                try 
-                { 
+                try
+                {
                     await con.OpenAsync();
                     await con.ExecuteAsync(sql, appointment);
                 }
-                catch (Exception ex) 
-                { 
-                    Console.WriteLine("Error class AppointmentRepository, UpdeteAppointment() "+ex.Message);
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error class AppointmentRepository, UpdeteAppointment() " + ex.Message);
                     throw;
                 }
+            }
+        }
+        public async Task<Appointment> GetAppointment(DateTime date, Master master, User user)
+        {
+            int masterId = master.Id;
+            int userId = user.Id;
+            string sql = @"SELECT * 
+                           FROM appointments 
+                           WHERE master_id = @mId AND user_id = @uId AND date = @Date";
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                var appointment = await con.QuerySingleOrDefaultAsync<Appointment>(sql, new { mId = masterId, uId = userId, Date = date });
+                return appointment;
             }
         }
     }

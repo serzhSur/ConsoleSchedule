@@ -25,7 +25,7 @@ namespace VizitConsole.Services
         {
             User user = await _userRepository.GetUserById(_userId);
             Master master = await _masterRepository.GetMasterById(_masterId);
-            var services = new List<Service>(await _serviceRepository.GetMasterServices(master));
+            List<Service> services = new List<Service>(await _serviceRepository.GetMasterServices(master));
             List<Master> masters = new List<Master>(await _masterRepository.GetAllMasters());
 
             bool exit = false;
@@ -36,7 +36,7 @@ namespace VizitConsole.Services
                 exit = (input == "ex");
                 if (exit == false)
                 {
-                    await ExecuteCommands(input,master,services,user);
+                    await ExecuteCommands(input, master, services, user);
                 }
                 Console.Clear();
             }
@@ -48,9 +48,9 @@ namespace VizitConsole.Services
                 Console.WriteLine($"Master id: {m.Id}\tName: {m.Name}\tSpeciality: {m.Speciality}" +
                          $"\tdayInterval: {m.Day_interval}");
             }
-            
+
             Console.WriteLine($"\nMaster {master.Name} Has {services.Count} Services: ");
-            
+
             foreach (var s in services)
             {
                 Console.WriteLine($"service id: {s.Id}\tname: {s.Name}\tduration: {s.Duration}\tprice: 00");
@@ -60,33 +60,36 @@ namespace VizitConsole.Services
 
             _scheduleService.ShowScheduleDatail(await _scheduleService.CreateScheduleForMaster(master));
 
-            Console.WriteLine($"\nRezalt: {Output}");
+            Console.WriteLine($"\nResult: {Output}");
         }
         private string InputCommands(Master master, User user)
         {
-            Console.Write($"\nTo make an appointment {user.Name} with {master.Name} Enter command: (add hh:mm serviceId)\nto escape enter: (ex) ");
+            Console.WriteLine($"\nUser: {user.Name} commands for appointment to master: {master.Name}");
+            Console.WriteLine("To make appointment, enter time and service id. Example: add 08:15 4");
+            Console.WriteLine("To cancell appointment, enter time. Example: can 09:30");
+            Console.WriteLine("To exit the application, enter:  ex");
+            Console.Write("Enter command: ");
             return Console.ReadLine();
         }
-        private async Task ExecuteCommands(string input, Master master, List<Service> services, User user)
+        private async Task<Master> ExecuteCommands(string input, Master master, List<Service> services, User user)
         {
             string[] commandParts = input.Split(' ');
+
             switch (commandParts[0].ToLower())
             {
                 case "add":
-                    await AddCommand(commandParts, master, services, user);
+                    await AddAppointment(commandParts, master, services, user);
                     break;
                 case "can":
-                    Output = "cancel appointment";
-                    break;
-                case "master":
-                    Output = "youre master is:";
+                    await CancelAppointment(commandParts, master, user);
                     break;
                 default:
                     Output = "Unknown Command";
                     break;
             }
+            return master;
         }
-        private async Task AddCommand(string[] command, Master master, List<Service> masterServices, User user)
+        private async Task AddAppointment(string[] command, Master master, List<Service> masterServices, User user)
         {
             try
             {
@@ -94,10 +97,9 @@ namespace VizitConsole.Services
                 int timeH = int.Parse(time[0]);
                 int timeM = int.Parse(time[1]);
                 int serviceId = int.Parse(command[2]);
-
                 var date = new DateTime(2024, 10, 14, timeH, timeM, 0);
-                Service selectedService = masterServices.FirstOrDefault(s => s.Id == serviceId);
 
+                Service selectedService = masterServices.FirstOrDefault(s => s.Id == serviceId);
                 if (selectedService != null)
                 {
                     Appointment appointment = new Appointment(date, master, selectedService, user);
@@ -108,6 +110,21 @@ namespace VizitConsole.Services
             catch (Exception ex)
             {
                 Output = "Incorrect Command" + ex.Message;
+            }
+        }
+        private async Task CancelAppointment(string[] command, Master master, User user)
+        {
+            try
+            {
+                string[] time = command[1].Split(":");
+                int timeH = int.Parse(time[0]);
+                int timeM = int.Parse(time[1]);
+                DateTime date = new DateTime(2024, 10, 14, timeH, timeM, 0);
+                await _appointmentService.CancelAppointment(date, master, user);
+            }
+            catch (Exception ex)
+            {
+                Output = "Incorrect Command " + ex.Message;
             }
         }
     }

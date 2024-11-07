@@ -1,4 +1,5 @@
-﻿using VizitConsole.Repositories;
+﻿using VizitConsole.Models;
+using VizitConsole.Repositories;
 
 namespace VizitConsole.Services
 {
@@ -50,13 +51,28 @@ namespace VizitConsole.Services
                 }
             }
         }
-        public async Task CancelAppointmentById(int id)
+        public async Task CancelAppointment(int id)
         {
-            Appointment appointment = await _repository.GetAppointmentById(id);
+            Appointment appointment = await _repository.GetAppointment(id);
             appointment.Cancellation = true;
             appointment.Duration = new TimeSpan(0, 0, 0);
 
             await _repository.UpdateAppointment(appointment);
+        }
+        public async Task CancelAppointment(DateTime date, Master master, User user) 
+        {
+            Appointment appointment = await _repository.GetAppointment(date, master, user);
+            if (appointment != null)
+            {
+                appointment.Cancellation = true;
+                appointment.Duration = new TimeSpan(0, 0, 0);
+
+                await _repository.UpdateAppointment(appointment);
+            }
+            else 
+            {
+                throw new KeyNotFoundException("Appointment not found.");
+            }
         }
     }
 }

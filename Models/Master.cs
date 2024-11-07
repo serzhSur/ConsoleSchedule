@@ -1,5 +1,4 @@
-﻿
-namespace VizitConsole.Models
+﻿namespace VizitConsole.Models
 {
     internal class  Master
     {
