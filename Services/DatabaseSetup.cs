@@ -8,19 +8,23 @@ namespace VizitConsole.Services
     internal class DatabaseSetup
     {
         private string _connString;
+        private ConfigurationService _configurationService;
         public DatabaseSetup(string connectionString)
         {
+            _configurationService = new ConfigurationService();
             _connString = connectionString;
         }
-        public async Task InitializeDatabase(string dbConString, string dbName, DateTime testRecordsDate) 
+        public async Task InitializeDatabase(DateTime testRecordsDate) 
         {
-            await CreateDataBase(dbConString, dbName);
+            await CreateDataBase();
             await CreateTables();
             await CreateTestRecords(testRecordsDate);
         }
-        public async Task CreateDataBase(string postgresConnection, string dbName)
+        public async Task CreateDataBase()
         {
-            using (var conn = new NpgsqlConnection(postgresConnection))
+            string connectionString = _configurationService.GetConnectionString("dbCreationConString");
+            string dbName = _configurationService.GetSetting("AppSettings:dbName");
+            using (var conn = new NpgsqlConnection(connectionString))
             {
                 string checkDbQ = "SELECT 1 FROM pg_database WHERE datname = @dbname";
                 try

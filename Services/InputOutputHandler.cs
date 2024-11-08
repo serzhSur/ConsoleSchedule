@@ -64,10 +64,10 @@ namespace VizitConsole.Services
         }
         private string InputCommands(Master master, User user)
         {
-            Console.WriteLine($"\nUser: {user.Name} commands for appointment to master: {master.Name}");
-            Console.WriteLine("To make appointment, enter time and service id. Example: add 08:15 4");
-            Console.WriteLine("To cancell appointment, enter time. Example: can 09:30");
-            Console.WriteLine("To exit the application, enter:  ex");
+            Console.WriteLine($"\nCommands for appointment User: {user.Name} to master: {master.Name}");
+            Console.WriteLine("1 - to make appointment, enter time and service id. Example: add 08:15 4");
+            Console.WriteLine("2 - to cancell appointment, enter time. Example: can 09:30");
+            Console.WriteLine("3 - to exit the application, enter:  ex");
             Console.Write("Enter command: ");
             return Console.ReadLine();
         }
@@ -121,6 +121,7 @@ namespace VizitConsole.Services
                 int timeM = int.Parse(time[1]);
                 DateTime date = new DateTime(2024, 10, 14, timeH, timeM, 0);
                 await _appointmentService.CancelAppointment(date, master, user);
+                Output = $"Appointment on {date.ToString("hh:mm")} Canceled";
             }
             catch (Exception ex)
             {
