@@ -1,4 +1,5 @@
-﻿using VizitConsole.Models;
+﻿using System.Globalization;
+using VizitConsole.Models;
 using VizitConsole.Repositories;
 
 namespace VizitConsole.Services
@@ -10,18 +11,20 @@ namespace VizitConsole.Services
         private ServiceRepository _serviceRepository;
         private AppointmentService _appointmentService;
         private ScheduleService _scheduleService;
+        private string connectionString;
         private string? Output;
         int _userId { get; set; } = 4;
         int _masterId { get; set; } = 1;
-        public InputOutputHandler(string connectionString)
+        public InputOutputHandler(ConfigurationService config)//string connectionString)
         {
+            connectionString = config.GetConnectionString("myDbConnection");
             _userRepository = new UserRepository(connectionString);
             _masterRepository = new MasterRepository(connectionString);
             _serviceRepository = new ServiceRepository(connectionString);
             _appointmentService = new AppointmentService(connectionString);
             _scheduleService = new ScheduleService(connectionString);
         }
-        public async Task Start()
+        public async Task Start(DayTime date)
         {
             User user = await _userRepository.GetUserById(_userId);
             Master master = await _masterRepository.GetMasterById(_masterId);

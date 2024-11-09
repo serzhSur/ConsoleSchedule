@@ -3,12 +3,11 @@
 try
 {
     var appconfig = new ConfigurationService();
-    string connectionString = appconfig.GetConnectionString("dbConString");
 
-    var dataBase = new DatabaseSetup(connectionString);
+    var dataBase = new DatabaseSetup(appconfig);
     await dataBase.InitializeDatabase(new DateTime(2024, 10, 14, 10, 0, 0));
 
-    var handler = new InputOutputHandler(connectionString);
+    var handler = new InputOutputHandler(appconfig);
     await handler.Start();
 }
 catch (Exception ex)
