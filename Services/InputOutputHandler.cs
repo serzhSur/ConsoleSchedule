@@ -24,7 +24,7 @@ namespace VizitConsole.Services
             _appointmentService = new AppointmentService(connectionString);
             _scheduleService = new ScheduleService(connectionString);
         }
-        public async Task Start(DayTime date)
+        public async Task Start()
         {
             User user = await _userRepository.GetUserById(_userId);
             Master master = await _masterRepository.GetMasterById(_masterId);
